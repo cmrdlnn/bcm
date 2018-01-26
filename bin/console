@@ -1,0 +1,26 @@
+#!/usr/bin/ruby -Eutf-8:utf-8
+
+# @author Алейников Максим <m.v.aleynikov@cit.rkomi.ru>
+#
+# Скрипт, запускающий IRB
+#
+
+require_relative '../config/app_init.rb'
+require 'irb'
+require 'irb/completion'
+
+begin
+  require_relative '../spec/spec_helper'
+rescue LoadError
+  nil
+end
+
+begin
+  require 'awesome_print'
+rescue LoadError
+  nil
+end
+
+WebMock.allow_net_connect! if defined?(WebMock)
+
+IRB.start

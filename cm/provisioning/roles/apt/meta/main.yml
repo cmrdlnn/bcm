@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Terdunov Vyacheslav
+  description: Role installs the packages using the apt.
+  license: BSD
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  galaxy_tags:
+    - apt
+
+dependencies: []

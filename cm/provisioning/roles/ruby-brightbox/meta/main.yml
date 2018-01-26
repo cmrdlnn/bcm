@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: Terdunov Vyacheslav
+  description: Role will install ruby package for Ubuntu. Bundler will also be installed.
+  license: BSD
+  min_ansible_version: 1.4
+  platforms:
+  - name: Ubuntu
+    versions:
+      - trusty
+      - utopic
+      - vivid
+
+  galaxy_tags:
+    - ruby
+    - bundler
+
+dependencies: []

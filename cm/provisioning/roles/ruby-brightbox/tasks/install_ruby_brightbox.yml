@@ -1,0 +1,11 @@
+- name: Set brightbox ruby repository
+  apt_repository:
+    repo: 'ppa:brightbox/ruby-ng'
+
+- name: Install package
+  apt:
+    name: '{{ item }}'
+    update_cache: yes
+    state: present
+  with_items:
+    - ruby{{ ruby_version }}
