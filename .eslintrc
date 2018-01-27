@@ -1,0 +1,11 @@
+{
+  "env": {
+    "browser": true
+  },
+  "extends":  "airbnb",
+  "parser": "babel-eslint",
+  "rules": {
+    "function-paren-newline": ["error", "consistent"],
+    "object-curly-newline": ["error", { "multiline": true }]
+  }
+}

@@ -19,7 +19,11 @@ module BitcoinCourseMonitoring
       # Класс контроллера REST API, основанный на Sinatra
       #
       class Controller < Sinatra::Base
-
+        # Задаёт index.erb view по умолчанию для всех get запросов
+        #
+        get '/*' do
+          erb :index
+        end
       end
     end
   end

@@ -1,0 +1,38 @@
+{
+  "name": "bitcoin_course_monitoring",
+  "version": "0.0.1",
+  "description": "",
+  "main": "frontend/index.jsx",
+  "scripts": {
+    "dev": "webpack -d --bail --config webpack.dev.js",
+    "prod": "webpack -p --bail --config webpack.prod.js",
+    "start": "webpack-dev-server -d --hot --watch-poll --config webpack.dev.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nikolay Ulyanov",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.16.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.5.1",
+    "webpack-dev-server": "^2.11.1"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "css-loader": "^0.28.9",
+    "file-loader": "^1.1.6",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "style-loader": "^0.19.1",
+    "webpack": "^3.10.0",
+    "webpack-merge": "^4.1.1"
+  }
+}

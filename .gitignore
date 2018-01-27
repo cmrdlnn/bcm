@@ -1,0 +1,8 @@
+# Infrastructure
+.vagrant
+cm/deploy/roles
+cm/provisioning/roles
+
+# FrontEnd
+node_modules
+public/*bundle.js
