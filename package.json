@@ -5,7 +5,7 @@
   "main": "frontend/index.jsx",
   "scripts": {
     "dev": "webpack -d --bail --config webpack.dev.js",
-    "prod": "webpack -p --bail --config webpack.prod.js",
+    "prod": "webpack -p --bail",
     "start": "webpack-dev-server -d --hot --watch-poll --config webpack.dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -27,10 +27,12 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "bootstrap": "^4.0.0",
     "css-loader": "^0.28.9",
     "file-loader": "^1.1.6",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "reactstrap": "^5.0.0-alpha.4",
     "style-loader": "^0.19.1",
     "webpack": "^3.10.0",
     "webpack-merge": "^4.1.1"

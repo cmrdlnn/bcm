@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
-const common = require('./webpack.common.js');
+const common = require('./webpack.config.js');
 
 const isWDS = process.argv.find(arg => arg.includes('webpack-dev-server'));
 
