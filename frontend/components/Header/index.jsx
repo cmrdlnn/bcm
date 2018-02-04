@@ -1,23 +1,26 @@
 import React from 'react';
-import {
-  Navbar,
-  NavbarBrand,
-  Container,
-} from 'reactstrap';
+
+import { withStyles } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
 
 import Logo from './components/Logo';
 
 import './styles.css';
 
-const Header = () => (
-  <Navbar dark color="primary">
-    <Container>
-      <NavbarBrand href="#">
-        <Logo />
+const styles = { flex: { flex: 1 } };
+
+const Header = ({ children, classes }) => (
+  <AppBar className="header" position="static">
+    <Toolbar>
+      <Logo />
+      <Typography className={classes.flex} type="title" color="inherit">
         itcoin Course Monitoring
-      </NavbarBrand>
-    </Container>
-  </Navbar>
+      </Typography>
+      { children }
+    </Toolbar>
+  </AppBar>
 );
 
-export default Header;
+export default withStyles(styles)(Header);

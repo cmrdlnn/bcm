@@ -1,11 +1,23 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { Provider } from 'react-redux';
+import { ConnectedRouter } from 'react-router-redux';
 
-import 'bootstrap/dist/css/bootstrap.css';
+import 'typeface-roboto';
 
-import App from './App';
+import configureStore, { history } from 'store';
+
+import Routes from 'routes';
+
+import 'styles.css';
+
+export const store = configureStore();
 
 render(
-  <App />,
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <Routes />
+    </ConnectedRouter>
+  </Provider>,
   document.getElementById('root'),
 );

@@ -2,7 +2,7 @@ import React from 'react';
 
 const Logo = () => (
   <svg
-    className="d-inline-block align-top"
+    className="logo"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 226.777 226.777"
   >

@@ -1,8 +1,12 @@
-.navbar-brand svg {
-  width: 6%;
+.header {
+  margin-bottom: 1rem;
 }
 
-.navbar-brand svg, .navbar-brand svg path {
+.header .logo {
+  width: 2rem;
+}
+
+.header .logo, .header .logo path {
   -moz-transition: all 0.4s ease;
   -ms-transition: all 0.4s ease;
   -o-transition: all 0.4s ease;
@@ -10,11 +14,11 @@
   transition: all 0.4s ease;
 }
 
-.navbar-brand svg path {
+.header .logo path {
   fill: #dae0e5;
 }
 
-.navbar-brand:hover svg {
+.header:hover .logo {
   -moz-transform: rotate(-20deg);
   -ms-transform: rotate(-20deg);
   -o-transform: rotate(-20deg);
@@ -27,6 +31,6 @@
   transform-origin: 0.49em 0.7em;
 }
 
-.navbar-brand:hover svg path {
-  fill: #efdf2f;
+.header:hover .logo path {
+  fill: rgb(255, 200, 65);
 }
