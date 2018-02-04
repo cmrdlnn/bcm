@@ -38,7 +38,7 @@ module BitcoinCourseMonitoring
       #  запись торгов и обновленный токен
       #
       def create_trade
-        create_data = params.merge(user_id: user_id)
+        create_data = params.merge(user_id: user_id, created_at: Time.now)
         trade = BitcoinCourseMonitoring::Models::Trade.create(create_data)
         trade_values = trade.values
         [trade_values, refresh_token]
