@@ -1,8 +1,8 @@
 install:
 	bundle install
 
-debug:
-	bundle exec bin/irb_debug
+console:
+	bundle exec bin/console
 
 run:
 	bundle exec foreman start

@@ -7,6 +7,8 @@
 
 # Загрузка REST-контроллера
 require "#{$lib}/api/rest/controller.rb"
+# Загрузка поддержки исключений
+require "#{$lib}/api/rest/errors.rb"
 
 # Установка конфигурации REST-контроллера
 BitcoinCourseMonitoring::API::REST::Controller.configure do |settings|

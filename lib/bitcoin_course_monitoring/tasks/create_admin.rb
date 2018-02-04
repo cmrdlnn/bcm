@@ -1,8 +1,7 @@
 # encoding: utf-8
 
-require 'openssl'
-require 'securerandom'
 require "#{$lib}/helpers/log"
+require "#{$lib}/helpers/create_password"
 
 module BitcoinCourseMonitoring
   module Tasks
@@ -12,30 +11,7 @@ module BitcoinCourseMonitoring
     #
     class CreateAdmin
       include Helpers::Log
-
-      # Список строчных букв английского алфавита
-      #
-      DOWNCASE_SYMBOLS = ('a'..'z').to_a
-
-      # Список прописных букв английского алфавита
-      #
-      UPCASE_SYMBOLS = ('A'..'Z').to_a
-
-      # Список букв английского алфавита
-      #
-      SYMBOLS = DOWNCASE_SYMBOLS + UPCASE_SYMBOLS
-
-      # Список цифр
-      #
-      DIGITS = ('0'..'9').to_a
-
-      # Символы, используемые в пароле
-      #
-      PASSWORD_SYMBOLS = SYMBOLS + DIGITS
-
-      # Длина пароля
-      #
-      LENGTH_PASSWORD = 16
+      include Helpers::CreatePassword
 
       # Создает учетную запись администратора голосования
       #
@@ -47,14 +23,16 @@ module BitcoinCourseMonitoring
       #
       def launch!
         if count_admin.zero?
-          BitcoinCourseMonitoring::Models::Admin.create(params)
+          BitcoinCourseMonitoring::Models::User.create(params)
         elsif count_admin.positive?
-          BitcoinCourseMonitoring::Models::Admin.order(:id).first.update(params)
+          BitcoinCourseMonitoring::Models::User
+          .where(role: 'administrator')
+          .order(:id).first.update(params)
         end
 
         log_info { 'Учетная запись администратора успешно создана' }
         log_info { 'Название учётной записи администратора(login): admin' }
-        log_info { "Пароль учётной записи администратора: #{password}" }
+        log_info { "Пароль учётной записи администратора: #{password_}" }
 
       end
 
@@ -66,41 +44,7 @@ module BitcoinCourseMonitoring
       #  количество учетных записей
       #
       def count_admin
-        BitcoinCourseMonitoring::Models::Admin.count
-      end
-
-      # Возвращает рандомную строку байт
-      #
-      # return [String]
-      #  рандомная строка байт
-      #
-      def salt
-        @salt ||= SecureRandom.random_bytes(32)
-      end
-
-      # Создает пароль и возвращает его
-      #
-      # return [String]
-      #  созданый пароль
-      #
-      def password
-        return @password unless @password.nil?
-        body = PASSWORD_SYMBOLS.sample(LENGTH_PASSWORD - 2)
-        first = SYMBOLS.sample
-        last = DIGITS.sample
-        body.unshift(first)
-        body.push(last)
-        @password = body.join
-      end
-
-      # Возвращает Дайджест пароля и соли
-      #
-      # @return [String]
-      #  хэш-функции sha256
-      #
-      def password_hash
-        concat_salt = "#{password}#{salt}"
-        OpenSSL::Digest.digest("SHA256", concat_salt)
+        BitcoinCourseMonitoring::Models::User.where(role: 'administrator').count
       end
 
       # Параметры для создания или обновления учетной записи администратора
@@ -111,9 +55,10 @@ module BitcoinCourseMonitoring
       def params
         {
           login: 'admin',
-          name: 'Администратор',
-          salt: salt,
-          password_hash: password_hash
+          first_name: 'Администратор',
+          role: 'administrator',
+          salt: salt_,
+          password_hash: password_hash_
         }
       end
     end
