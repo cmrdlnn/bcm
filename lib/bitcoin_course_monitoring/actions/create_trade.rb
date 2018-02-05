@@ -38,10 +38,23 @@ module BitcoinCourseMonitoring
       #  запись торгов и обновленный токен
       #
       def create_trade
+        check_trader!
         create_data = params.merge(user_id: user_id, created_at: Time.now)
         trade = BitcoinCourseMonitoring::Models::Trade.create(create_data)
         trade_values = trade.values
         [trade_values, refresh_token]
+      end
+
+      private
+
+      # Проверяет являеться ли пользователь администратором
+      #
+      # @return [Boolean]
+      #  результат проверки
+      #
+      def check_trader!
+        return if users_dataset.first.role == 'trader'
+        raise 'Неавторизованный запрос'
       end
     end
   end

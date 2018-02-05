@@ -38,10 +38,21 @@ module BitcoinCourseMonitoring
       #  запись торгов и обновленный токен
       #
       def show
+        check_trader!
         [trade, refresh_token]
       end
 
       private
+
+      # Проверяет являеться ли пользователь администратором
+      #
+      # @return [Boolean]
+      #  результат проверки
+      #
+      def check_trader!
+        return if users_dataset.first.role == 'trader'
+        raise 'Неавторизованный запрос'
+      end
 
       # Возвращает запись торгов
       #

@@ -35,10 +35,21 @@ module BitcoinCourseMonitoring
       #  запись пользователя и обновленный токен
       #
       def show
+        check_admin!
         [user, refresh_token]
       end
 
       private
+
+      # Проверяет являеться ли пользователь администратором
+      #
+      # @return [Boolean]
+      #  результат проверки
+      #
+      def check_admin!
+        return if users_dataset.first.role == 'administrator'
+        raise 'Неавторизованный запрос'
+      end
 
       # Возвращает запись пользователя
       #
