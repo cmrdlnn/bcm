@@ -97,7 +97,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  201
         #
-        put 'api/users/' do
+        post 'api/users/' do
           token = request.env['HTTP_X_CSRF_TOKEN']
           params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
@@ -164,7 +164,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  201
         #
-        put 'api/users/' do
+        post 'api/trades/' do
           token = request.env['HTTP_X_CSRF_TOKEN']
           params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
