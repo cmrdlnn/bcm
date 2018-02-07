@@ -6,9 +6,9 @@ module BitcoinCourseMonitoring
   module Models
     # @author Алейников Максим <m.v.aleinikov@gmail.com>
     #
-    # Вспомогательный модуль для файла тестирование модели учетной записи администротора
+    # Вспомогательный модуль для файла тестирование модели учетной записи пользователя
     #
-    module AdminSpecHelper
+    module UserSpecHelper
       # Возвращает Дайджест пароля и соли
       #
       # @param [String] password
