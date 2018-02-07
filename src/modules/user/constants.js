@@ -1,2 +1,2 @@
 export const AUTHENTICATION_CHECK = 'USER/AUTHENTICATION_CHECK';
-export const SIGNIN = 'USER/SIGNIN';
+export const SIGN_IN = 'USER/SIGN_IN';

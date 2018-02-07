@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   Button,
   Card,
@@ -13,7 +16,18 @@ import {
   Row
 } from 'reactstrap';
 
+import { signIn } from 'modules/user';
+
 class Login extends Component {
+  handelSubmit = (e) => {
+    e.preventDefault();
+    const data = ['login', 'password'].reduce((result, attr) => {
+      result[attr] = e.target.elements[attr].value;
+      return result;
+    }, {});
+    this.props.signIn(data);
+  }
+
   render() {
     return (
       <div className="app flex-row align-items-center">
@@ -25,30 +39,32 @@ class Login extends Component {
                   <CardBody>
                     <h1>Вход</h1>
                     <p className="text-muted">Аутентифицируйтесь в системе</p>
-                    <InputGroup className="mb-3">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="icon-user" />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input type="text" placeholder="Имя пользователя" />
-                    </InputGroup>
-                    <InputGroup className="mb-4">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="icon-lock" />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input type="password" placeholder="Пароль" />
-                    </InputGroup>
-                    <Row>
-                      <Col xs="6">
-                        <Button color="primary" className="px-4">Войти</Button>
-                      </Col>
-                      <Col xs="6" className="text-right">
-                        <Button color="link" className="px-0">Забыли пароль?</Button>
-                      </Col>
-                    </Row>
+                    <form onSubmit={this.handelSubmit}>
+                      <InputGroup className="mb-3">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="icon-user" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input name="login" type="text" placeholder="Имя пользователя" />
+                      </InputGroup>
+                      <InputGroup className="mb-4">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="icon-lock" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input name="password" type="password" placeholder="Пароль" />
+                      </InputGroup>
+                      <Row>
+                        <Col xs="6">
+                          <Button color="primary" className="px-4" type="submit">Войти</Button>
+                        </Col>
+                        <Col xs="6" className="text-right">
+                          <Button color="link" className="px-0">Забыли пароль?</Button>
+                        </Col>
+                      </Row>
+                    </form>
                   </CardBody>
                 </Card>
                 { /*
@@ -72,4 +88,8 @@ class Login extends Component {
   }
 }
 
-export default Login;
+Login.propTypes = { signIn: PropTypes.func.isRequired };
+
+const mapDispatchToProps = dispatch => ({ signIn: bindActionCreators(signIn, dispatch) });
+
+export default connect(null, mapDispatchToProps)(Login);

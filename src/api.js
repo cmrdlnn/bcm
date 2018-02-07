@@ -1,3 +1,5 @@
+import { history } from 'store';
+
 export function request(url, data, type = 'GET', headerOptions = {}) {
   const headers = {
     Mode: 'cors',
@@ -21,12 +23,12 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
         case 401:
         case 403: {
           if (token) localStorage.removeItem('X-CSRF-Token');
-          window.location.replace('/login');
+          history.push('/login');
           throw response;
         }
 
         case 500:
-          window.location.replace('/500');
+          history.push('/500');
 
         default: {
           const newToken = response.headers.get('X-CSRF-Token');

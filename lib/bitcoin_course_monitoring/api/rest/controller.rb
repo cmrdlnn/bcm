@@ -33,7 +33,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #   204
         #
-        get '/api/auth' do
+        post '/api/auth' do
           content, token = BitcoinCourseMonitoring::Actions::Auth.new(params).auth
           headers 'X-CSRF-Token' => token
           status :no_content

@@ -5,6 +5,8 @@
 # Файл настройки REST-контроллера
 #
 
+require 'rack/parser'
+
 # Загрузка REST-контроллера
 require "#{$lib}/api/rest/controller.rb"
 # Загрузка поддержки исключений
@@ -23,4 +25,8 @@ BitcoinCourseMonitoring::API::REST::Controller.configure do |settings|
 
   settings.enable :static
   settings.set    :root, $root
+
+  settings.use Rack::Parser, content_types: {
+    'application/json' => proc { |body| ::MultiJson.decode body }
+  }
 end

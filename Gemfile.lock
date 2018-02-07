@@ -46,6 +46,8 @@ GEM
     pg (1.0.0)
     public_suffix (3.0.1)
     rack (2.0.3)
+    rack-parser (0.7.0)
+      rack
     rack-protection (2.0.0)
       rack
     rack-test (0.8.2)
@@ -109,6 +111,7 @@ DEPENDENCIES
   factory_girl
   foreman
   pg
+  rack-parser
   rack-test
   rake
   rest-client
