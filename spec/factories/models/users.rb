@@ -8,8 +8,6 @@
 FactoryGirl.define do
   factory :user, class: BitcoinCourseMonitoring::Models::User do
     login         { create(:string) }
-    first_name    { create(:string) }
-    last_name     { create(:string) }
     role          {'trader'}
     salt          { SecureRandom.random_bytes(32) }
     password_hash { SecureRandom.random_bytes(32) }

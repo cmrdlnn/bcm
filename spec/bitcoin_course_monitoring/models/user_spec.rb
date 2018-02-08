@@ -33,22 +33,6 @@ RSpec.describe BitcoinCourseMonitoring::Models::User do
       end
     end
 
-    context 'when first_name is not specified' do
-      let(:params) { attributes_for(:user).except(:first_name) }
-
-      it 'should raise Sequel::NotNullConstraintViolation' do
-        expect { subject }.to raise_error(Sequel::NotNullConstraintViolation)
-      end
-    end
-
-    context 'when first_name is nil' do
-      let(:params) { attributes_for(:user, first_name: nil) }
-
-      it 'should raise Sequel::InvalidValue' do
-        expect { subject }.to raise_error(Sequel::InvalidValue)
-      end
-    end
-
     context 'when login is not specified' do
       let(:params) { attributes_for(:user).except(:login) }
 
@@ -79,32 +63,8 @@ RSpec.describe BitcoinCourseMonitoring::Models::User do
     subject(:instance) { create(:user) }
 
     methods =
-      %i(first_name last_name role login salt password_hash id password? update setup_password trades)
+      %i(role login salt password_hash id password? update setup_password trades)
     it { is_expected.to respond_to(*methods) }
-  end
-
-  describe '#first_name' do
-    subject(:result) { instance.first_name }
-
-    let(:instance) { create(:user) }
-
-    describe 'result' do
-      subject { result }
-
-      it { is_expected.to be_a(String) }
-    end
-  end
-
-  describe '#last_name' do
-    subject(:result) { instance.last_name }
-
-    let(:instance) { create(:user) }
-
-    describe 'result' do
-      subject { result }
-
-      it { is_expected.to be_a(String) }
-    end
   end
 
   describe '#role' do
@@ -254,14 +214,6 @@ RSpec.describe BitcoinCourseMonitoring::Models::User do
 
       it 'should raise Sequel::MassAssignmentRestriction' do
         expect { subject }.to raise_error(Sequel::MassAssignmentRestriction)
-      end
-    end
-
-    context 'when first_name is nil' do
-      let(:params) { { first_name: nil } }
-
-      it 'should raise Sequel::InvalidValue' do
-        expect { subject }.to raise_error(Sequel::InvalidValue)
       end
     end
 

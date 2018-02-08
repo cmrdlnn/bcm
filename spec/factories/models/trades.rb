@@ -11,6 +11,7 @@ FactoryGirl.define do
     secret      { create(:string) }
     margin      { 0.04 }
     order_price { 0.3 }
+    created_at  { Time.now }
 
     association :user
   end

@@ -13,8 +13,6 @@ Sequel.migration do
 
       column :login, :text, null: false, unique: true
       column :role, :role_type, index: true, null: false
-      column :first_name, :text, null: false
-      column :last_name, :text
       column :salt, :bytea
       column :password_hash, :bytea
     end

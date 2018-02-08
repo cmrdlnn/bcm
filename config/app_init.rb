@@ -30,9 +30,12 @@ end
 
 $app_name = 'bitcoin_course_monitoring'
 $lib = "#{$root}/lib/#{$app_name}"
+$pair = {}
 
 # Загрузка инициализации составных частей приложения
 Dir["#{__dir__}/initializers/*.rb"].sort.each(&method(:require))
 
 # Загрузка инициализации, связанной с окружением
 Dir["#{__dir__}/environments/*.rb"].sort.each(&method(:require))
+
+Dir["#{$lib}/services/**/*.rb"].each(&method(:require))
