@@ -52,6 +52,7 @@ export function JSONRequest(url, data, type = 'POST', headerOptions = {}) {
     .then(response => response.json());
 }
 
+/*
 function objectToParams(object) {
   if (!object || typeof object !== 'object') return '';
   return Object.entries(object).reduce((str, [key, value], index) => {
@@ -70,3 +71,4 @@ function objectToParams(object) {
     return `${str}&${result}`;
   }, '');
 }
+*/

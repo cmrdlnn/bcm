@@ -1,13 +1,13 @@
 import { request } from 'api';
 
-import { INDEX } from '../constants';
+import { USERS_INDEX } from '../constants';
 
 export default function () {
   return (dispatch) => {
-    request('api/users')
+    request('/api/users')
       .then((payload) => {
         dispatch({
-          type: INDEX,
+          type: USERS_INDEX,
           payload
         });
       });

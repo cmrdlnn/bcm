@@ -1,13 +1,13 @@
 import { JSONRequest } from 'api';
 
-import { USER_CREATE } from '../constants';
+import { USER_UPDATE } from '../constants';
 
 export default function (data) {
   return (dispatch) => {
-    JSONRequest('/api/users', data)
+    JSONRequest(`/api/users/${data.id}`, data, 'PUT')
       .then((payload) => {
         dispatch({
-          type: USER_CREATE,
+          type: USER_UPDATE,
           payload
         });
       });

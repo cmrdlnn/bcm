@@ -1,5 +1,7 @@
 const routes = {
-  '/': 'Home',
+  '/users': 'Пользователи',
+  '/users/create': 'Создание нового пользователя',
+  /*
   '/dashboard': 'Dashboard',
   '/components': 'Components',
   '/charts': 'Charts',
@@ -15,5 +17,7 @@ const routes = {
   '/icons/font-awesome': 'Font Awesome',
   '/icons/simple-line-icons': 'Simple Line Icons',
   '/widgets': 'Widgets'
+  */
 };
+
 export default routes;

@@ -154,6 +154,7 @@
 // will display normally.
 
 .table-responsive {
+  overflow: visible;
   @include media-breakpoint-down(md) {
     display: block;
     width: 100%;

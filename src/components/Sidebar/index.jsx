@@ -1,11 +1,10 @@
-import React, {Component} from 'react';
-import {NavLink} from 'react-router-dom';
-import {Badge, Nav, NavItem} from 'reactstrap';
+import React, { Component } from 'react';
+import { NavLink } from 'react-router-dom';
+import { Badge, Nav, NavItem } from 'reactstrap';
 import classNames from 'classnames';
-import nav from './_nav'
+import nav from './_nav';
 
 class Sidebar extends Component {
-
   handleClick(e) {
     e.preventDefault();
     e.target.parentElement.classList.toggle('open');
@@ -14,7 +13,6 @@ class Sidebar extends Component {
   activeRoute(routeName, props) {
     // return this.props.location.pathname.indexOf(routeName) > -1 ? 'nav-item nav-dropdown open' : 'nav-item nav-dropdown';
     return props.location.pathname.indexOf(routeName) > -1 ? 'nav-item nav-dropdown open' : 'nav-item nav-dropdown';
-
   }
 
   // todo Sidebar nav secondLevel
@@ -22,9 +20,7 @@ class Sidebar extends Component {
   //   return this.props.location.pathname.indexOf(routeName) > -1 ? "nav nav-second-level collapse in" : "nav nav-second-level collapse";
   // }
 
-
   render() {
-
     const props = this.props;
     const activeRoute = this.activeRoute;
     const handleClick = this.handleClick;
@@ -32,8 +28,8 @@ class Sidebar extends Component {
     // badge addon to NavItem
     const badge = (badge) => {
       if (badge) {
-        const classes = classNames( badge.class );
-        return (<Badge className={ classes } color={ badge.variant }>{ badge.text }</Badge>)
+        const classes = classNames(badge.class);
+        return <Badge className={classes} color={badge.variant}>{ badge.text }</Badge>;
       }
     };
 
@@ -41,17 +37,17 @@ class Sidebar extends Component {
     const wrapper = item => { return (!item.wrapper ? item.name : (React.createElement(item.wrapper.element, item.wrapper.attributes, item.name))) };
 
     // nav list section title
-    const title =  (title, key) => {
-      const classes = classNames( "nav-title", title.class);
-      return (<li key={key} className={ classes }>{wrapper(title)} </li>);
+    const title = (title, key) => {
+      const classes = classNames("nav-title", title.class);
+      return (<li key={key} className={classes}>{wrapper(title)} </li>);
     };
 
     // nav list divider
-    const divider = (divider, key) => (<li key={key} className="divider"></li>);
+    const divider = (divider, key) => <li key={key} className="divider" />;
 
     // nav item with nav link
     const navItem = (item, key) => {
-      const classes = classNames( "nav-link", item.class);
+      const classes = classNames("nav-link", item.class);
       return (
         <NavItem key={key}>
           <NavLink to={item.url} className={ classes } activeClassName="active">

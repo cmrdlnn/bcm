@@ -20,7 +20,7 @@ module BitcoinCourseMonitoring
         # Инициализирует объект класс
         #
         def initialize
-          super('Предоставленная строка не является паролем учётной записи')
+          super('Неверный пароль')
         end
       end
 
@@ -37,7 +37,7 @@ module BitcoinCourseMonitoring
         #
         def initialize(login)
           super(<<-MESSAGE.squish)
-            Строка #{login} не является названием учётной записи пользователя
+            Пользователь #{login} не найден
           MESSAGE
         end
       end

@@ -1,15 +1,24 @@
-import { CREATE, DELETE, INDEX } from '../constants';
+import { USER_CREATE, USER_UPDATE, USERS_INDEX } from '../constants';
 
-export default function reducer(state = { fetching: true, users: [] }, { type, payload }) {
+export default function reducer(state = { users: [] }, { type, payload }) {
   switch (type) {
-    case CREATE:
+    case USER_CREATE:
       return { ...state, users: [...state.users, payload] };
 
-    case DELETE:
-      return { ...state, users: state.users.filter(user => user !== payload) };
+    case USER_UPDATE: {
+      const index = state.users.findIndex(user => user.id === payload.id);
+      return {
+        ...state,
+        users: [
+          ...state.users.slice(0, index),
+          payload,
+          ...state.users.slice(index + 1)
+        ]
+      };
+    }
 
-    case INDEX:
-      return { users: payload };
+    case USERS_INDEX:
+      return { ...state, users: payload };
 
     default:
       return state;

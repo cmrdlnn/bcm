@@ -16,7 +16,7 @@ import {
   Row
 } from 'reactstrap';
 
-import { signIn } from 'modules/user';
+import { signIn } from 'modules/users';
 
 class Login extends Component {
   handelSubmit = (e) => {
