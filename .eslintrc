@@ -5,7 +5,15 @@
   "extends":  "airbnb",
   "parser": "babel-eslint",
   "rules": {
+    "comma-dangle": ["error", "never"],
     "function-paren-newline": ["error", "consistent"],
     "object-curly-newline": ["error", { "multiline": true }]
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.js"
+      }
+    }
   }
 }

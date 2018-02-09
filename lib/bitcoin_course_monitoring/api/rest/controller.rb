@@ -33,10 +33,9 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #   204
         #
-        get '/api/auth' do
+        post '/api/auth' do
           content, token = BitcoinCourseMonitoring::Actions::Auth.new(params).auth
           headers 'X-CSRF-Token' => token
-          status :no_content
           body content.to_json
         end
 
@@ -45,7 +44,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  200
         #
-        get 'api/users' do
+        get '/api/users' do
           token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::IndexUser.new(token).index
@@ -62,7 +61,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  200
         #
-        get 'api/users/:id' do |id|
+        get '/api/users/:id' do |id|
           token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::ShowUser.new(id, token).show
@@ -79,7 +78,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  200
         #
-        put 'api/users/:id' do |id|
+        put '/api/users/:id' do |id|
           token = request.env['HTTP_X_CSRF_TOKEN']
           params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
@@ -97,7 +96,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  201
         #
-        post 'api/users/' do
+        post '/api/users' do
           token = request.env['HTTP_X_CSRF_TOKEN']
           params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
@@ -115,7 +114,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  204
         #
-        delete 'api/users/:id' do |id|
+        delete '/api/users/:id' do |id|
           token = request.env['HTTP_X_CSRF_TOKEN']
           new_token =
             BitcoinCourseMonitoring::Actions::DeleteUser.new(id, token).delete_user
@@ -128,7 +127,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  200
         #
-        get 'api/trades' do
+        get '/api/trades' do
           token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::IndexTrade.new(token).index
@@ -145,7 +144,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  200
         #
-        get 'api/trades/:id' do |id|
+        get '/api/trades/:id' do |id|
           token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::ShowTrade.new(id, token).show
@@ -162,7 +161,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  200
         #
-        put 'api/trades/:id' do |id|
+        put '/api/trades/:id' do |id|
           token = request.env['HTTP_X_CSRF_TOKEN']
           params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
@@ -180,7 +179,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  201
         #
-        post 'api/trades/' do
+        post '/api/trades' do
           token = request.env['HTTP_X_CSRF_TOKEN']
           params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =

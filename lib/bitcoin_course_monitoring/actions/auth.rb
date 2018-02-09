@@ -40,7 +40,7 @@ module BitcoinCourseMonitoring
         user = find_user
         check_user!(user)
         check_password!(user)
-        user_info = user_values(user).values.except(:password_hash, :salt)
+        user_info = user_values(user)
         token = Tokens::Manager.register_key(user.id)
         [user_info, token]
       end
