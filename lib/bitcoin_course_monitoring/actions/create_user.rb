@@ -40,11 +40,30 @@ module BitcoinCourseMonitoring
       def create_user
         check_admin!
         user = BitcoinCourseMonitoring::Models::User.create(params)
+        password = user.setup_password
+        send_password(password, user)
         user_values = user_values(user)
         [user_values, refresh_token]
       end
 
       private
+
+      # Отправляет пароль по почте
+      #
+      # @param [String] password
+      #  пароль
+      #
+      # @param [BitcoinCourseMonitoring::Models::User]
+      #  запись пользователя
+      #
+      def send_password(password, user)
+        opts = {
+                 name: user.name,
+                 login: user.login,
+                 password: password
+               }
+        BitcoinCourseMonitoring::Services::Mailer.send_mail(opts)
+      end
 
       # Проверяет являеться ли пользователь администратором
       #

@@ -55,7 +55,6 @@ module BitcoinCourseMonitoring
       def params
         {
           login: 'admin',
-          first_name: 'Администратор',
           role: 'administrator',
           salt: salt_,
           password_hash: password_hash_
