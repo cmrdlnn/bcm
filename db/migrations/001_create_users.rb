@@ -15,6 +15,7 @@ Sequel.migration do
       column :role, :role_type, index: true, null: false
       column :salt, :bytea
       column :password_hash, :bytea
+      column :created_at, :timestamp, null: false, default: Time.now
     end
   end
 end

@@ -37,6 +37,7 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.6",
     "font-awesome": "^4.7.0",
+    "halogenium": "^2.2.3",
     "history": "^4.7.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",

@@ -53,7 +53,8 @@ module BitcoinCourseMonitoring
       #
       def users
         BitcoinCourseMonitoring::Models::User
-          .select(:id, :login, :role).exclude(role: 'administrator').naked.all
+          .select(:id, :login, :role, :created_at)
+          .exclude(role: 'administrator').naked.all
       end
     end
   end

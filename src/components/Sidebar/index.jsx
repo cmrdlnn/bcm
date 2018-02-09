@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { Badge, Nav, NavItem } from 'reactstrap';
 import classNames from 'classnames';
@@ -61,7 +62,10 @@ class Sidebar extends Component {
     const navDropdown = (item, key) => {
       return (
         <li key={key} className={activeRoute(item.url, props)}>
-          <a className="nav-link nav-dropdown-toggle" href="#" onClick={handleClick.bind(this)}><i className={item.icon}></i> {item.name}</a>
+          <a className="nav-link nav-dropdown-toggle" href="#" onClick={handleClick.bind(this)}>
+            <i className={item.icon} />
+            {item.name}
+          </a>
           <ul className="nav-dropdown-items">
             {navList(item.children)}
           </ul>
@@ -73,11 +77,11 @@ class Sidebar extends Component {
       item.title ? title(item, idx) :
       item.divider ? divider(item, idx) :
       item.children ? navDropdown(item, idx)
-                    : navItem(item, idx) ;
+                    : navItem(item, idx);
 
     // nav list
     const navList = (items) => {
-      return items.map( (item, index) => navLink(item, index) );
+      return items.map( (item, index) => navLink(item, index));
     };
 
     // sidebar-nav root
@@ -85,12 +89,14 @@ class Sidebar extends Component {
       <div className="sidebar">
         <nav className="sidebar-nav">
           <Nav>
-            {navList(nav.items)}
+            {navList(nav[this.props.role].items)}
           </Nav>
         </nav>
       </div>
-    )
+    );
   }
 }
 
-export default Sidebar;
+const mapStateToProps = ({ user: { role } }) => ({ role });
+
+export default connect(mapStateToProps)(Sidebar);

@@ -1,8 +1,8 @@
-import { AUTHENTICATION_CHECK, LOGOUT, SIGN_IN } from '../constants';
+import { AUTH_CHECK, LOGOUT, SIGN_IN } from '../constants';
 
 export default function reducer(state = { fetching: true }, { type, payload }) {
   switch (type) {
-    case AUTHENTICATION_CHECK:
+    case AUTH_CHECK:
       return payload || {};
 
     case SIGN_IN:

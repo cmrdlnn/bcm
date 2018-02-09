@@ -1,24 +1,25 @@
 import { history } from 'store';
 
-import { JSONRequest } from 'api';
+import { request } from 'api';
 
-import { AUTHENTICATION_CHECK } from '../constants';
+import { AUTH_CHECK } from '../constants';
 
 export default function () {
   return (dispatch) => {
     const token = localStorage.getItem('X-CSRF-Token');
 
     if (token) {
-      JSONRequest('/check_authentification')
+      request('/api/auth/check')
         .then(response => response.json())
         .then((payload) => {
+          history.push('/');
           dispatch({
-            type: AUTHENTICATION_CHECK,
+            type: AUTH_CHECK,
             payload,
           });
         });
     } else {
-      dispatch({ type: AUTHENTICATION_CHECK });
+      dispatch({ type: AUTH_CHECK });
       history.push('/login');
     }
   };

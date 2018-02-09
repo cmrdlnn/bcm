@@ -1,7 +1,7 @@
 import { history } from 'store';
 
 import store from 'index';
-import { ALERT_SHOW } from 'modules/alerts/constants';
+import { showAlert } from 'modules/alerts';
 
 export function request(url, data, type = 'GET', headerOptions = {}) {
   const headers = {
@@ -12,7 +12,6 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
   };
 
   const token = localStorage.getItem('X-CSRF-Token');
-
   if (token) headers['X-CSRF-Token'] = token;
 
   return fetch(url, {
@@ -47,10 +46,9 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
       return response;
     })
     .catch(error => error.json()
-      .then(json => store.dispatch({
-        type: ALERT_SHOW,
-        payload: json.message,
-      })));
+      .then(json => store.dispatch(
+        showAlert(json.message),
+      )));
 }
 
 export function JSONRequest(url, data, type = 'POST', headerOptions = {}) {

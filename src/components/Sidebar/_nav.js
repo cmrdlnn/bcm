@@ -1,43 +1,48 @@
 export default {
-  items: [
-  /*
-    {
-      name: 'Dashboard',
-      url: '/dashboard',
-      icon: 'icon-speedometer',
-      badge: {
-        variant: 'info',
-        text: 'NEW'
-      }
-    },
-  */
-    {
-      title: true,
-      name: 'Навигация',
-      wrapper: {            // optional wrapper object
-        element: 'span',      // required valid HTML5 element tag
-        attributes: {}        // optional valid JS object with JS API naming ex: { className: "my-class", style: { fontFamily: "Verdana" }, id: "my-id"}
-      },
-      class: ''             // optional class names space delimited list for title item ex: "text-center"
-    },
-    {
-      name: 'Пользователи',
-      url: '/users',
-      icon: 'icon-user',
-      children: [
-        {
-          name: 'Все пользователи',
-          url: '/users/all',
-          icon: 'icon-people'
+  trader: {
+    items: [
+      {
+        name: 'Dashboard',
+        url: '/',
+        icon: 'icon-speedometer',
+        badge: {
+          variant: 'info',
+          text: 'NEW',
         },
-        {
-          name: 'Создать',
-          url: '/users/create',
-          icon: 'icon-user-follow'
-        }
-      ]
-    },
-    /*
+      },
+    ],
+  },
+  administrator: {
+    items: [
+      {
+        title: true,
+        name: 'Навигация',
+        wrapper: {
+          element: 'span',
+          attributes: {},
+        },
+        class: '',
+      },
+      {
+        name: 'Пользователи',
+        url: '/users',
+        icon: 'icon-user',
+        children: [
+          {
+            name: 'Все пользователи',
+            url: '/users/all',
+            icon: 'icon-people',
+          },
+          {
+            name: 'Создать',
+            url: '/users/create',
+            icon: 'icon-user-follow',
+          },
+        ],
+      },
+    ],
+  },
+  /*
     {
       name: 'Components',
       url: '/components',
@@ -155,5 +160,4 @@ export default {
       ]
     }
     */
-  ]
 };

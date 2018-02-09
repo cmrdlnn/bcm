@@ -1,6 +1,6 @@
 import { USER_CREATE, USER_UPDATE, USERS_INDEX } from '../constants';
 
-export default function reducer(state = { users: [] }, { type, payload }) {
+export default function reducer(state = { users: [], fetching: true }, { type, payload }) {
   switch (type) {
     case USER_CREATE:
       return { ...state, users: [...state.users, payload] };
@@ -11,7 +11,7 @@ export default function reducer(state = { users: [] }, { type, payload }) {
     }
 
     case USERS_INDEX:
-      return { ...state, users: payload };
+      return { ...state, users: payload, fetching: false };
 
     default:
       return state;

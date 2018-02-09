@@ -8,7 +8,7 @@ export default function reducer(state = [], { type, payload }) {
     }
 
     case ALERT_SHOW:
-      return [...state, { headline: 'Ошибка!', id: Date.now(), message: payload, type: 'danger' }];
+      return [...state, payload];
 
     default:
       return state;

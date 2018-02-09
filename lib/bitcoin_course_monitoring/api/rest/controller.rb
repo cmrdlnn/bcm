@@ -25,17 +25,35 @@ module BitcoinCourseMonitoring
       class Controller < Sinatra::Base
         helpers Helpers
 
-        # Аутентифицирует учётную запись администратора
+        # Аутентифицирует учётную запись
         #
         # @param [Hash] params
         #  параметры запроса
         #
         # @return [Status]
-        #   204
+        #   200
         #
         post '/api/auth' do
           content, token = BitcoinCourseMonitoring::Actions::Auth.new(params).auth
           headers 'X-CSRF-Token' => token
+          body content.to_json
+        end
+
+        # Проверяет авторизацию пользователя в системе и возвращает его данные
+        # если проверка успешна
+        #
+        # @param [Hash] params
+        #  параметры запроса
+        #
+        # @return [Status]
+        #   200
+        #
+        get '/api/auth/check' do
+          token = request.env['HTTP_X_CSRF_TOKEN']
+          content, new_token =
+            BitcoinCourseMonitoring::Actions::CheckAuth.new(token).check
+          headers 'X-CSRF-Token' => new_token
+          status :ok
           body content.to_json
         end
 

@@ -1,5 +1,6 @@
 const routes = {
-  '/users/all': 'Пользователи',
+  '/users': 'Пользователи',
+  '/users/all': 'Все пользователи',
   '/users/create': 'Создание нового пользователя',
   /*
   '/dashboard': 'Dashboard',
