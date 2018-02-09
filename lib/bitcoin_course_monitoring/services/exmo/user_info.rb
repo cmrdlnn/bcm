@@ -1,13 +1,12 @@
 # encoding: utf-8
-
-require 'uri'
+require 'net/https'
 
 module BitcoinCourseMonitoring
   module Services
     module Exmo
       # @author Алейников Максим <m.v.aleinikov@gmail.com>
       #
-      # Класс возвращающий информацию по крсу валютных пар
+      # Класс возвращающий информацию об аккаунте пользователя
       #
       class UserInfo
 
@@ -27,7 +26,7 @@ module BitcoinCourseMonitoring
         #  ассоциативный массив с данными аккаунта
         #
         def user_info
-          response = RestClient.post(url, headers)
+          response = RestClient.post(url, payload, headers)
           JSON.parse(response, symbolize_names: true)
         end
 
@@ -40,23 +39,49 @@ module BitcoinCourseMonitoring
         #
         def headers
           {
-            Sign: sign,
-            Key: key
+            :Sign => sign,
+            :Key => key
           }
         end
 
+        # Подготавливает параметры запроса
+        #
+        # @param [Hash] params
+        #  входящие параметры запроса
+        #
+        # @return [Hash]
+        #  подготовленные параметры
+        #
+        def payload
+          { nonce: nonce }
+        end
+
+        # Возвращает
+        #
+        # @return [String]
+        #  строка параметров
+        #
         def post_data
-          URI.encode_www_form({nance: nonce})
+          URI.encode_www_form(payload)
         end
 
+        # Возвращает обязательный POST-параметр nonce с инкрементным числовым значением (>0)
+        #
+        # @return [String]
+        #  строка с инкрементным числовым значением
+        #
         def nonce
-          Time.now.strftime("%s%6N")
+          nonce ||= Time.now.strftime("%s%3N")
         end
 
+        # Возвращает дайджест
+        #
         def digest
           OpenSSL::Digest.new('sha512')
         end
 
+        # Подписывает строку параметров секретным ключом методом HMAC-SHA512
+        #
         def sign
           OpenSSL::HMAC.hexdigest(digest, secret, post_data)
         end
