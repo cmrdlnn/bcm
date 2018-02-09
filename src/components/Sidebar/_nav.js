@@ -2,13 +2,13 @@ export default {
   trader: {
     items: [
       {
-        name: 'Dashboard',
+        name: 'Главная',
         url: '/',
         icon: 'icon-speedometer',
-        badge: {
-          variant: 'info',
-          text: 'NEW',
-        },
+        // badge: {
+        //   variant: 'info',
+        //   text: 'NEW',
+        // },
       },
     ],
   },

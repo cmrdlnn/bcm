@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { Container } from 'reactstrap';
+
 import Header from 'components/Header';
 import Sidebar from 'components/Sidebar';
 import Breadcrumb from 'components/Breadcrumb';
 import Footer from 'components/Footer';
+import Dashboard from 'components/Dashboard';
 /*
 import Aside from 'components/Aside';
 import Dashboard from 'views/Dashboard';
@@ -35,9 +39,23 @@ class Full extends Component {
           <main className="main">
             <Breadcrumb />
             <Container fluid>
-              <Switch>
-                <Route path="/users/all" name="UsersList" component={UsersList} />
-                <Route path="/users/create" name="NewUser" component={UserCreation} />
+                { this.props.role === 'administrator' ? (
+                  <Switch>
+                    <Route path="/users/all" name="UsersList" component={UsersList} />
+                    <Route path="/users/create" name="NewUser" component={UserCreation} />
+                    <Redirect from="*" to="/users/all" />
+                  </Switch>
+                  ) : (
+                    <Switch>
+                      <Route exact path="/dashboard" name="Dashboard" component={Dashboard} />
+                      { /*
+                      <Route path="/trades/all" name="TradesControl" component={TradesControl} />
+                      <Route path="/trades/create" name="TradeCreation" component={TradeCreation} />
+                      */ }
+                      <Redirect from="*" to="/dashboard" />
+                    </Switch>
+                  )
+                }
                 { /*
                 <Route path="/dashboard" name="Dashboard" component={Dashboard} />
                 <Route path="/components/buttons" name="Buttons" component={Buttons} />
@@ -53,8 +71,6 @@ class Full extends Component {
                 <Route path="/widgets" name="Widgets" component={Widgets} />
                 <Route path="/charts" name="Charts" component={Charts} />
                 */ }
-                <Redirect from="*" to="/users/all" />
-              </Switch>
             </Container>
           </main>
           { /* <Aside /> */ }
@@ -65,4 +81,10 @@ class Full extends Component {
   }
 }
 
-export default Full;
+Full.defaultProps = { role: null };
+
+Full.propTypes = { role: PropTypes.string };
+
+const mapStateToProps = ({ user: { role } }) => ({ role });
+
+export default connect(mapStateToProps)(Full);
