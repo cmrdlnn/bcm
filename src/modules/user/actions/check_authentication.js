@@ -10,10 +10,11 @@ export default function () {
 
     if (token) {
       JSONRequest('/check_authentification')
+        .then(response => response.json())
         .then((payload) => {
           dispatch({
             type: AUTHENTICATION_CHECK,
-            payload
+            payload,
           });
         });
     } else {

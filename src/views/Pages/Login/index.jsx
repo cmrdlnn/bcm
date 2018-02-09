@@ -13,7 +13,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Row
+  Row,
 } from 'reactstrap';
 
 import { signIn } from 'modules/user';

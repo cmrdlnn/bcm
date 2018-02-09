@@ -18,11 +18,11 @@ module BitcoinCourseMonitoring
       # @param [Hash] to
       #  параметры отправки письма
       #
-      def self.send_mail(opts={})
+      def self.send_mail(opts = {})
         opts[:from]        ||= 'support@bcm.com'
         opts[:server]      ||= 'localhost'
         msg = <<-EOF
-          Добро пожаловать #{opts[:name]}!
+          Добро пожаловать!
           Ваш логин: #{opts[:login]}
           Пароль: #{opts[:password]}
 

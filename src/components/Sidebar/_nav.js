@@ -27,7 +27,7 @@ export default {
       children: [
         {
           name: 'Все пользователи',
-          url: '/users',
+          url: '/users/all',
           icon: 'icon-people'
         },
         {

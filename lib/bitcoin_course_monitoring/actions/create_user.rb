@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики создания записи пользователя
     #
-    class CreateUser
+    class CreateUser < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [Hash] params
@@ -25,7 +25,7 @@ module BitcoinCourseMonitoring
       #
       def initialize(params, token)
         super(token)
-        @params = params
+        @params = params.merge(role: 'trader')
       end
 
       # Параметры
@@ -58,10 +58,9 @@ module BitcoinCourseMonitoring
       #
       def send_password(password, user)
         opts = {
-                 name: user.name,
-                 login: user.login,
-                 password: password
-               }
+          login: user.login,
+          password: password
+        }
         BitcoinCourseMonitoring::Services::Mailer.send_mail(opts)
       end
 

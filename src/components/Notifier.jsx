@@ -7,7 +7,13 @@ import { AlertList } from 'react-bs-notifier';
 import { hideAlert } from 'modules/alerts';
 
 const Notifier = ({ alertHide, alerts }) => (
-  <AlertList alerts={alerts} dismissTitle="Закрыть" onDismiss={alertHide} timeout={3000} />
+  <AlertList
+    alerts={alerts}
+    dismissTitle="Закрыть"
+    onDismiss={alertHide}
+    position="bottom-right"
+    timeout={3000}
+  />
 );
 
 Notifier.propTypes = {

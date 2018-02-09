@@ -1,11 +1,14 @@
 import { history } from 'store';
 
+import store from 'index';
+import { ALERT_SHOW } from 'modules/alerts/constants';
+
 export function request(url, data, type = 'GET', headerOptions = {}) {
   const headers = {
     Mode: 'cors',
     Charset: 'utf-8',
     'X-Requested-With': 'XMLHttpRequest',
-    ...headerOptions
+    ...headerOptions,
   };
 
   const token = localStorage.getItem('X-CSRF-Token');
@@ -16,10 +19,9 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
     method: type,
     headers,
     credentials: 'same-origin',
-    body: data
+    body: data,
   })
     .then((response) => {
-      console.log(response)
       switch (response.status) {
         case 401:
         case 403: {
@@ -35,7 +37,7 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
         default: {
           const newToken = response.headers.get('X-CSRF-Token');
           if (newToken) {
-            localStorage.setItem('X-CSRF-Token', token);
+            localStorage.setItem('X-CSRF-Token', newToken);
           }
         }
       }
@@ -43,7 +45,12 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
       if (!response.ok) throw response;
 
       return response;
-    });
+    })
+    .catch(error => error.json()
+      .then(json => store.dispatch({
+        type: ALERT_SHOW,
+        payload: json.message,
+      })));
 }
 
 export function JSONRequest(url, data, type = 'POST', headerOptions = {}) {
@@ -52,8 +59,7 @@ export function JSONRequest(url, data, type = 'POST', headerOptions = {}) {
     JSON.stringify(data),
     type,
     { 'Content-Type': 'application/json', ...headerOptions },
-  )
-    .then(response => response.json());
+  );
 }
 
 /*

@@ -18,16 +18,6 @@ module BitcoinCourseMonitoring
     #   @return [Integer]
     #     идентификатор
     #
-    # @!attribute first_name
-    #   Фамилия пользователя
-    #   @return [String]
-    #     фамилия пользователя
-    #
-    # @!attribute last_name
-    #   Имя пользователя
-    #   @return [String]
-    #     имя пользователя
-    #
     # @!attribute login
     #   логин
     #   @return [String]
@@ -49,11 +39,6 @@ module BitcoinCourseMonitoring
     #   Дайджест пароля и соли
     #   @return [String]
     #     дайджест пароля и соли
-    #
-    # @!attribute closed
-    #   Закрыты ли торги или нет
-    #   @return [Boolean]
-    #     закрыты ли торги или нет
     #
     # @!attribute trades
     #   Записи торгов

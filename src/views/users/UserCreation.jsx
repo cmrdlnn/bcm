@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   Button,
   Card,
@@ -11,14 +14,15 @@ import {
   InputGroup,
   InputGroupAddon,
   Label,
-  Row
+  Row,
 } from 'reactstrap';
 
-class UserCreation extends Component {
-  constructor(props) {
-    super(props);
+import { createUser } from 'modules/administration';
 
-    this.state = {};
+class UserCreation extends Component {
+  handelSubmit = (e) => {
+    e.preventDefault();
+    this.props.createUser({ login: e.target.elements.login.value });
   }
 
   render() {
@@ -32,14 +36,14 @@ class UserCreation extends Component {
                 Создание нового пользователя
               </CardHeader>
               <CardBody>
-                <form>
+                <form onSubmit={this.handelSubmit}>
                   <FormGroup>
-                    <Label for="email">e-mail</Label>
+                    <Label for="login">e-mail</Label>
                     <InputGroup>
                       <InputGroupAddon addonType="prepend">@</InputGroupAddon>
                       <Input
-                        id="email"
-                        name="email"
+                        id="login"
+                        name="login"
                         placeholder="Введите e-mail нового пользователя"
                         required
                         type="email"
@@ -60,4 +64,8 @@ class UserCreation extends Component {
   }
 }
 
-export default UserCreation;
+UserCreation.propTypes = { createUser: PropTypes.func.isRequired };
+
+const mapDispatchToProps = dispatch => ({ createUser: bindActionCreators(createUser, dispatch) });
+
+export default connect(null, mapDispatchToProps)(UserCreation);

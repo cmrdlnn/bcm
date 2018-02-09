@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики получения информации о пользователях
     #
-    class IndexUser
+    class IndexUser < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [#to_s] token
@@ -53,7 +53,7 @@ module BitcoinCourseMonitoring
       #
       def users
         BitcoinCourseMonitoring::Models::User
-        .select(:id, :first_name, :last_name).naked.all
+          .select(:id, :login, :role).exclude(role: 'administrator').naked.all
       end
     end
   end

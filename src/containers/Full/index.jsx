@@ -36,7 +36,7 @@ class Full extends Component {
             <Breadcrumb />
             <Container fluid>
               <Switch>
-                <Route exact path="/users" name="UsersList" component={UsersList} />
+                <Route path="/users/all" name="UsersList" component={UsersList} />
                 <Route path="/users/create" name="NewUser" component={UserCreation} />
                 { /*
                 <Route path="/dashboard" name="Dashboard" component={Dashboard} />
@@ -53,7 +53,7 @@ class Full extends Component {
                 <Route path="/widgets" name="Widgets" component={Widgets} />
                 <Route path="/charts" name="Charts" component={Charts} />
                 */ }
-                <Redirect from="*" to="/users" />
+                <Redirect from="*" to="/users/all" />
               </Switch>
             </Container>
           </main>

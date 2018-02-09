@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   Row,
   Col,
@@ -12,8 +15,10 @@ import {
   DropdownMenu,
   DropdownItem,
   ButtonDropdown,
-  PaginationLink
+  PaginationLink,
 } from 'reactstrap';
+
+import { indexUsers } from 'modules/administration';
 
 class UsersList extends Component {
   constructor(props) {
@@ -23,6 +28,10 @@ class UsersList extends Component {
     this.state = {
       dropdownOpen: false
     };
+  }
+
+  componentWillMount() {
+    this.props.indexUsers();
   }
 
   toggle() {
@@ -91,4 +100,8 @@ class UsersList extends Component {
   }
 }
 
-export default UsersList;
+UsersList.propTypes = { indexUsers: PropTypes.func.isRequired };
+
+const mapDispatchToProps = dispatch => ({ indexUsers: bindActionCreators(indexUsers, dispatch) });
+
+export default connect(null, mapDispatchToProps)(UsersList);
