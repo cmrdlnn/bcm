@@ -19,16 +19,18 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
     body: data
   })
     .then((response) => {
+      console.log(response)
       switch (response.status) {
         case 401:
         case 403: {
           if (token) localStorage.removeItem('X-CSRF-Token');
           history.push('/login');
-          throw response;
+          break;
         }
 
         case 500:
           history.push('/500');
+          break;
 
         default: {
           const newToken = response.headers.get('X-CSRF-Token');
@@ -37,6 +39,8 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
           }
         }
       }
+
+      if (!response.ok) throw response;
 
       return response;
     });

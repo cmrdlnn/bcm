@@ -1,7 +1,7 @@
-import users from './reducers/users';
+import user from './reducers/user';
 
-export default users;
+export default user;
 
 export checkAuthentication from './actions/check_authentication';
-export signIn from './actions/sign_in';
 export logout from './actions/logout';
+export signIn from './actions/sign_in';

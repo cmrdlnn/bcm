@@ -1,3 +1,9 @@
-import users from './users';
+import administration from './administration';
+import alerts from './alerts';
+import user from './user';
 
-export default { users };
+export default {
+  administration,
+  alerts,
+  user
+};

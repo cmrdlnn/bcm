@@ -1,3 +1,0 @@
-export const AUTHENTICATION_CHECK = 'USERS/AUTHENTICATION_CHECK';
-export const LOGOUT = 'USERS/LOGOUT';
-export const SIGN_IN = 'USERS/SIGN_IN';

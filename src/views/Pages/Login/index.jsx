@@ -16,7 +16,7 @@ import {
   Row
 } from 'reactstrap';
 
-import { signIn } from 'modules/users';
+import { signIn } from 'modules/user';
 
 class Login extends Component {
   handelSubmit = (e) => {
@@ -46,7 +46,7 @@ class Login extends Component {
                             <i className="icon-user" />
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input name="login" type="text" placeholder="Имя пользователя" />
+                        <Input name="login" type="text" placeholder="Имя пользователя" required />
                       </InputGroup>
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
@@ -54,7 +54,7 @@ class Login extends Component {
                             <i className="icon-lock" />
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input name="password" type="password" placeholder="Пароль" />
+                        <Input name="password" type="password" placeholder="Пароль" required />
                       </InputGroup>
                       <Row>
                         <Col xs="6">

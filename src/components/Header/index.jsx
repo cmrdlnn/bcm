@@ -15,9 +15,7 @@ import {
   DropdownToggle
 } from 'reactstrap';
 
-import { history } from 'store';
-
-import { logout } from 'modules/users';
+import { logout } from 'modules/user';
 
 class Header extends Component {
   constructor(props) {

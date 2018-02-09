@@ -36,7 +36,6 @@ module BitcoinCourseMonitoring
         post '/api/auth' do
           content, token = BitcoinCourseMonitoring::Actions::Auth.new(params).auth
           headers 'X-CSRF-Token' => token
-          status :no_content
           body content.to_json
         end
 
