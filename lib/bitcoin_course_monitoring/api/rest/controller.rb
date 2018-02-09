@@ -55,7 +55,7 @@ module BitcoinCourseMonitoring
 
         # Возвращает запись пользователя по id
         #
-        # @parap [String] id
+        # @param [String] id
         #  идентификатор записи пользователя
         #
         # @return [Status]
@@ -108,7 +108,7 @@ module BitcoinCourseMonitoring
 
         # Удаляет запись пользователя по id
         #
-        # @parap [String] id
+        # @param [String] id
         #  идентификатор записи пользователя
         #
         # @return [Status]
@@ -138,7 +138,7 @@ module BitcoinCourseMonitoring
 
         # Возвращает запись торгов по id
         #
-        # @parap [String] id
+        # @param [String] id
         #  идентификатор записи торгов
         #
         # @return [Status]
@@ -186,6 +186,30 @@ module BitcoinCourseMonitoring
             BitcoinCourseMonitoring::Actions::CreateTrade.new(params, token).create_trade
           headers 'X-CSRF-Token' => new_token
           status :created
+          body content.to_json
+        end
+
+        # Возвращает ордера на покупку и продажу по валютной паре
+        #
+        # @return [Status]
+        #  200
+        #
+        get '/api/order_book' do
+          slice_params = params.slice(:pair)
+          content =
+            BitcoinCourseMonitoring::Services::Exmo::OrderBook.new(slice_params).get_order_book
+          status :ok
+          body content.to_json
+        end
+
+        # Возвращает курс пары
+        #
+        # @return [Status]
+        #  200
+        #
+        get '/api/course' do
+          content = $pair
+          status :ok
           body content.to_json
         end
 
