@@ -13,7 +13,6 @@ module BitcoinCourseMonitoring
     # Класс создающий SMTP сервер для отправки электронной почты
     #
     class Mailer
-
       # Отправляет письмо по электронной почте
       #
       # @param [Hash] to
@@ -23,11 +22,11 @@ module BitcoinCourseMonitoring
         opts[:from]        ||= 'support@bcm.com'
         opts[:server]      ||= 'localhost'
         msg = <<-EOF
-          Добро пожаловать {opts[:name]}!
+          Добро пожаловать #{opts[:name]}!
           Ваш логин: #{opts[:login]}
           Пароль: #{opts[:password]}
 
-          С уважением, команда LuckyTrader.
+          С уважением, команда BitcoinTrader.
         EOF
 
         Net::SMTP.start(opts[:server]) do |smtp|

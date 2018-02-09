@@ -107,6 +107,22 @@ module BitcoinCourseMonitoring
           body content.to_json
         end
 
+        # Удаляет запись пользователя по id
+        #
+        # @parap [String] id
+        #  идентификатор записи пользователя
+        #
+        # @return [Status]
+        #  204
+        #
+        delete 'api/users/:id' do |id|
+          token = request.env['HTTP_X_CSRF_TOKEN']
+          new_token =
+            BitcoinCourseMonitoring::Actions::DeleteUser.new(id, token).delete_user
+          headers 'X-CSRF-Token' => new_token
+          status :no_content
+        end
+
         # Возвращает индекс записей торгов
         #
         # @return [Status]
