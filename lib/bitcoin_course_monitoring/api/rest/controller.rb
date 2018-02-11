@@ -49,7 +49,6 @@ module BitcoinCourseMonitoring
         #   200
         #
         get '/api/auth/check' do
-          token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::CheckAuth.new(token).check
           headers 'X-CSRF-Token' => new_token
@@ -63,7 +62,6 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/users' do
-          token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::IndexUser.new(token).index
           headers 'X-CSRF-Token' => new_token
@@ -80,7 +78,6 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/users/:id' do |id|
-          token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::ShowUser.new(id, token).show
           headers 'X-CSRF-Token' => new_token
@@ -97,8 +94,6 @@ module BitcoinCourseMonitoring
         #  200
         #
         put '/api/users/:id' do |id|
-          token = request.env['HTTP_X_CSRF_TOKEN']
-          params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
             BitcoinCourseMonitoring::Actions::UpdateUser.new(id, params, token).update_user
           headers 'X-CSRF-Token' => new_token
@@ -115,8 +110,6 @@ module BitcoinCourseMonitoring
         #  201
         #
         post '/api/users' do
-          token = request.env['HTTP_X_CSRF_TOKEN']
-          params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
             BitcoinCourseMonitoring::Actions::CreateUser.new(params, token).create_user
           headers 'X-CSRF-Token' => new_token
@@ -133,7 +126,6 @@ module BitcoinCourseMonitoring
         #  204
         #
         delete '/api/users/:id' do |id|
-          token = request.env['HTTP_X_CSRF_TOKEN']
           new_token =
             BitcoinCourseMonitoring::Actions::DeleteUser.new(id, token).delete_user
           headers 'X-CSRF-Token' => new_token
@@ -146,7 +138,6 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/trades' do
-          token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::IndexTrade.new(token).index
           headers 'X-CSRF-Token' => new_token
@@ -163,7 +154,6 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/trades/:id' do |id|
-          token = request.env['HTTP_X_CSRF_TOKEN']
           content, new_token =
             BitcoinCourseMonitoring::Actions::ShowTrade.new(id, token).show
           headers 'X-CSRF-Token' => new_token
@@ -180,8 +170,6 @@ module BitcoinCourseMonitoring
         #  200
         #
         put '/api/trades/:id' do |id|
-          token = request.env['HTTP_X_CSRF_TOKEN']
-          params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
             BitcoinCourseMonitoring::Actions::UpdateTrade.new(id, params, token).update_trade
           headers 'X-CSRF-Token' => new_token
@@ -198,8 +186,6 @@ module BitcoinCourseMonitoring
         #  201
         #
         post '/api/trades' do
-          token = request.env['HTTP_X_CSRF_TOKEN']
-          params = JSON.parse(request.body.read, symbolize_names: true)
           content, new_token =
             BitcoinCourseMonitoring::Actions::CreateTrade.new(params, token).create_trade
           headers 'X-CSRF-Token' => new_token
@@ -213,9 +199,8 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/order_book' do
-          slice_params = params.slice(:pair)
           content =
-            BitcoinCourseMonitoring::Services::Exmo::OrderBook.new(slice_params).get_order_book
+            BitcoinCourseMonitoring::Services::Exmo::OrderBook.new(params).order_book
           status :ok
           body content.to_json
         end
@@ -228,6 +213,19 @@ module BitcoinCourseMonitoring
         get '/api/course' do
           content = $pair
           status :ok
+          body content.to_json
+        end
+
+        # Возвращает информацию об учётной записи пользователя на бирже
+        #
+        # @return [Status]
+        #  200
+        #
+        post '/api/user_info' do
+          content = BitcoinCourseMonitoring::Services::Exmo::UserInfo
+                    .new(params)
+                    .user_info
+
           body content.to_json
         end
 

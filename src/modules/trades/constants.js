@@ -1,0 +1,1 @@
+export const TRADE_CREATE = 'TRADES/CREATE';

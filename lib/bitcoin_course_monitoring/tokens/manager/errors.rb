@@ -27,8 +27,9 @@ module BitcoinCourseMonitoring
             #   токен авторизации
             #
             def initialize(token)
+              # Токен авторизации #{token} не является зарегистрированным
               super(<<-MESSAGE.squish)
-                Токен авторизации #{token} не является зарегистрированным
+                Необходима авторизация
               MESSAGE
             end
           end

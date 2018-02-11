@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'net/https'
 
 module BitcoinCourseMonitoring
@@ -9,13 +10,12 @@ module BitcoinCourseMonitoring
       # Класс возвращающий информацию об аккаунте пользователя
       #
       class UserInfo
-
         # Инициализирует клас объекта
         #
-        def initialize(key, secret)
+        def initialize(params)
           @url = 'https://api.exmo.com/v1/user_info/'
-          @key = key
-          @secret = secret
+          @key = params[:key]
+          @secret = params[:secret]
         end
 
         attr_reader :url, :key, :secret

@@ -1,14 +1,14 @@
 import { request } from 'api';
 
-import { CURRENCIES_SHOW } from '../constants';
+import { FETCH_TICKER } from '../constants';
 
-export default function (data) {
+export default function () {
   return (dispatch) => {
-    request('/api/course', data)
+    request('/api/course')
       .then(response => response.json())
       .then((payload) => {
         dispatch({
-          type: CURRENCIES_SHOW,
+          type: FETCH_TICKER,
           payload,
         });
       });

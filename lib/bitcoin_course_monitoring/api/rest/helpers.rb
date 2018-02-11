@@ -54,6 +54,15 @@ module BitcoinCourseMonitoring
         def file?
           params[:file].is_a?(Hash) && params[:file][:tempfile].is_a?(Tempfile)
         end
+
+        # Возвращает токен авторизации пользователя
+        #
+        # @return [String]
+        #   токен авторизации пользователя
+        #
+        def token
+          request.env['HTTP_X_CSRF_TOKEN']
+        end
       end
     end
   end

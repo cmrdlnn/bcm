@@ -15,6 +15,8 @@ import {
   DropdownToggle
 } from 'reactstrap';
 
+import { history } from 'store';
+
 import { logout } from 'modules/user';
 
 class Header extends Component {
@@ -92,7 +94,7 @@ class Header extends Component {
             <Dropdown direction="up" isOpen={dropdownOpen} toggle={this.toggle}>
               <DropdownToggle className="nav-link dropdown-toggle">
                 { /* <img src='img/avatars/6.jpg' className="img-avatar" alt="admin@bootstrapmaster.com"/> */ }
-                <span className="d-md-down-none">admin</span>
+                <span className="d-md-down-none">{this.props.login}</span>
               </DropdownToggle>
               <DropdownMenu right className={dropdownOpen ? 'show' : ''}>
                 { /*
@@ -104,14 +106,18 @@ class Header extends Component {
                 <DropdownItem header tag="div" className="text-center"><strong>Настройки</strong></DropdownItem>
                 <DropdownItem><i className="fa fa-user"></i> Profile</DropdownItem>
                 */ }
-                <DropdownItem><i className="fa fa-wrench" />Настройки</DropdownItem>
+                <DropdownItem onClick={() => history.push('/settings')}>
+                  <i className="fa fa-wrench" />Настройки
+                </DropdownItem>
                 { /*
                 <DropdownItem><i className="fa fa-usd"></i> Payments<Badge color="secondary">42</Badge></DropdownItem>
                 <DropdownItem><i className="fa fa-file"></i> Projects<Badge color="primary">42</Badge></DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem><i className="fa fa-shield"></i> Lock Account</DropdownItem>
                 */ }
-                <DropdownItem onClick={this.props.logout}><i className="fa fa-lock" />Выйти</DropdownItem>
+                <DropdownItem onClick={this.props.logout}>
+                  <i className="fa fa-lock" />Выйти
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </NavItem>
@@ -122,8 +128,13 @@ class Header extends Component {
   }
 }
 
-Header.propTypes = { logout: PropTypes.func.isRequired };
+Header.propTypes = {
+  login: PropTypes.string,
+  logout: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = ({ user: { login } }) => ({ login });
 
 const mapDispatchToProps = dispatch => ({ logout: bindActionCreators(logout, dispatch) });
 
-export default connect(null, mapDispatchToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

@@ -1,23 +1,25 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Row,
-  Col,
+  Button,
+  ButtonDropdown,
   Card,
-  CardHeader,
   CardBody,
-  Table,
+  CardHeader,
+  Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Pagination,
   PaginationItem,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  ButtonDropdown,
   PaginationLink,
+  Row,
+  Table,
 } from 'reactstrap';
+
+import { history } from 'store';
 
 import { indexUsers } from 'modules/administration';
 
@@ -117,7 +119,15 @@ class Users extends Component {
                     users.length ? (
                       <UsersTable users={users} />
                     ) : (
-                      <h2 className="text-center">В системе нет зарегистрированых пользователей</h2>
+                      <Fragment>
+                        <h2 className="text-center">В системе нет зарегистрированых пользователей</h2>
+                        <Button
+                          color="primary"
+                          onClick={() => history.push('/users/create')}
+                        >
+                          Создать первого пользователя
+                        </Button>
+                      </Fragment>
                     )
                   )
                 }

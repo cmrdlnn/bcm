@@ -3,13 +3,13 @@ import { Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { currenciesShow } from 'modules/currencies';
+import { fetchTicker } from 'modules/statistic';
 
 import Widget04 from './components/Widget04';
 
 class Widgets extends Component {
   componentWillMount() {
-    this.props.currenciesShow();
+    this.props.fetchTicker();
   }
 
   render() {
@@ -49,10 +49,10 @@ class Widgets extends Component {
   }
 }
 
-const mapStateToProps = ({ currencies }) => ({ ...currencies });
+const mapStateToProps = ({ statistic: { ticker } }) => ({ ...ticker });
 
 const mapDispatchToProps = dispatch => ({
-  currenciesShow: bindActionCreators(currenciesShow, dispatch),
+  fetchTicker: bindActionCreators(fetchTicker, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Widgets);

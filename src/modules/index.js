@@ -1,11 +1,11 @@
 import administration from './administration';
-import currencies from './currencies';
 import alerts from './alerts';
+import statistic from './statistic';
 import user from './user';
 
 export default {
   administration,
   alerts,
-  currencies,
+  statistic,
   user,
 };

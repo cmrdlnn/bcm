@@ -1,1 +1,0 @@
-export const CURRENCIES_SHOW = 'CURRENCIES/SHOW';

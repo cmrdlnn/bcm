@@ -10,14 +10,20 @@ export default function () {
 
     if (token) {
       request('/api/auth/check')
-        .then(response => response.json())
-        .then((payload) => {
-          history.push('/');
-          dispatch({
-            type: AUTH_CHECK,
-            payload,
-          });
-        });
+        .then(
+          response => response.json()
+            .then((payload) => {
+              dispatch({
+                type: AUTH_CHECK,
+                payload,
+              });
+              if (history.location.pathname === '/login') history.push('/');
+            }),
+          () => {
+            dispatch({ type: AUTH_CHECK });
+            history.push('/login');
+          },
+        );
     } else {
       dispatch({ type: AUTH_CHECK });
       history.push('/login');

@@ -8,15 +8,15 @@ module BitcoinCourseMonitoring
       # Класс возвращающий информацию по ордерам на покупку и продажу
       #
       class OrderBook
-
         # Инициализирует клас объекта
         #
-        def initialize(pair)
+        def initialize(params)
           @url = 'https://api.exmo.com/v1/order_book/'
-          @pair = pair
+          @limit = params[:limit]
+          @pair = params[:pair]
         end
 
-        attr_reader :url, :pair
+        attr_reader :url, :limit, :pair
 
         # Отправляет запрос на получение ордеров по валютным парам
         #
@@ -26,8 +26,8 @@ module BitcoinCourseMonitoring
         # @return [Hash]
         #  информация об ордерах валютных пар
         #
-        def get_order_book
-          response = RestClient.get(url, params: pair)
+        def order_book
+          response = RestClient.get(url, params: { limit: limit, pair: pair })
           JSON.parse(response.body, symbolize_names: true)
         end
       end

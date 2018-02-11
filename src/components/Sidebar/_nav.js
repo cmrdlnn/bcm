@@ -2,13 +2,44 @@ export default {
   trader: {
     items: [
       {
-        name: 'Главная',
+        name: 'Статистика биржи',
         url: '/',
-        icon: 'icon-speedometer',
+        icon: 'icon-chart',
         // badge: {
         //   variant: 'info',
         //   text: 'NEW',
         // },
+      },
+      {
+        title: true,
+        name: 'Навигация',
+        wrapper: {
+          element: 'span',
+          attributes: {},
+        },
+        class: '',
+      },
+      {
+        name: 'Торги',
+        url: '/trades',
+        icon: 'icon-basket-loaded',
+        children: [
+          {
+            name: 'Активные',
+            url: '/trades/active',
+            icon: 'icon-control-play',
+          },
+          {
+            name: 'Создать',
+            url: '/trades/create',
+            icon: 'icon-note',
+          },
+          {
+            name: 'Архив',
+            url: '/trades/archive',
+            icon: 'icon-layers',
+          },
+        ],
       },
     ],
   },

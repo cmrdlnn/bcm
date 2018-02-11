@@ -1,5 +1,10 @@
 const routes = {
-  '/dashboard': 'Информационная панель',
+  '/dashboard': 'Информационная панель биржи',
+  '/settings': 'Настройки аккаунта',
+  '/trades': 'Торги',
+  '/trades/active': 'Активные',
+  '/trades/create': 'Создание',
+  '/trades/archive': 'Архив',
   '/users': 'Пользователи',
   '/users/all': 'Все пользователи',
   '/users/create': 'Создание нового пользователя',

@@ -45,13 +45,13 @@ class Widget04 extends Component {
     return (
       <Card className={classes} {...attributes} style={{ height: '100%' }}>
         <CardBlock className="card-body">
-          <div className="h1 text-muted text-left mb-2">
-            <i className="fa fa-bitcoin" />
-          </div>
-          <div className="h1 text-muted text-right mb-2">
+          <div className="h1 text-muted text-left mb-2" style={{ float: 'left' }}>
             <i className="fa fa-dollar" />
           </div>
-          <div className="h4 mb-0">{ value }</div>
+          <div className="h1 text-muted text-right mb-2">
+            <i className="fa fa-bitcoin" />
+          </div>
+          <div className="h4 mb-0">{ value.replace(/(.*\..{3})(.+)/, '$1') }</div>
           <small className="text-muted text-uppercase font-weight-bold">{ children }</small>
         </CardBlock>
       </Card>

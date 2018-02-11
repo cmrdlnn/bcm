@@ -41,14 +41,17 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
         }
       }
 
+      console.log(response)
+
       if (!response.ok) throw response;
 
       return response;
     })
     .catch(error => error.json()
-      .then(json => store.dispatch(
-        showAlert(json.message),
-      )));
+      .then((json) => {
+        store.dispatch(showAlert(json.message));
+        throw json.message;
+      }));
 }
 
 export function JSONRequest(url, data, type = 'POST', headerOptions = {}) {
@@ -60,8 +63,7 @@ export function JSONRequest(url, data, type = 'POST', headerOptions = {}) {
   );
 }
 
-/*
-function objectToParams(object) {
+export function objectToParams(object) {
   if (!object || typeof object !== 'object') return '';
   return Object.entries(object).reduce((str, [key, value], index) => {
     let result;
@@ -79,4 +81,3 @@ function objectToParams(object) {
     return `${str}&${result}`;
   }, '');
 }
-*/
