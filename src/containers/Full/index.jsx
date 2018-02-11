@@ -30,6 +30,7 @@ import Settings from 'views/settings';
 import UsersList from 'views/users/UsersList';
 import UserCreation from 'views/users/UserCreation';
 import TradeCreationPage from 'views/trades/TradeCreationPage';
+import TradesPage from 'views/trades/TradesPage';
 
 class Full extends Component {
   render() {
@@ -51,9 +52,10 @@ class Full extends Component {
                 <Switch>
                   <Route exact path="/dashboard" name="Dashboard" component={Dashboard} />
                   <Route path="/trades/create" name="TradeCreationPage" component={TradeCreationPage} />
+                  <Route path="/trades/active" name="ActiveTrades" component={TradesPage} />
+                  <Route path="/trades/archive" name="ClosedTrades" component={TradesPage} />
                   { /*
-                  <Route path="/trades/all" name="TradesControl" component={TradesControl} />
-                  <Route path="/trades/create" name="TradeCreation" component={TradeCreation} />
+                  <Route path="/trades/id" name="TradePage" component={TradePage} />
                   */ }
                   <Route path="/settings" name="Settings" component={Settings} />
                   <Redirect from="*" to="/dashboard" />

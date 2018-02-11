@@ -41,8 +41,6 @@ export function request(url, data, type = 'GET', headerOptions = {}) {
         }
       }
 
-      console.log(response)
-
       if (!response.ok) throw response;
 
       return response;

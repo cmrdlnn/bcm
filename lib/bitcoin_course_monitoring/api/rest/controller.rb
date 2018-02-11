@@ -139,7 +139,7 @@ module BitcoinCourseMonitoring
         #
         get '/api/trades' do
           content, new_token =
-            BitcoinCourseMonitoring::Actions::IndexTrade.new(token).index
+            BitcoinCourseMonitoring::Actions::IndexTrade.new(params, token).index
           headers 'X-CSRF-Token' => new_token
           status :ok
           body content.to_json

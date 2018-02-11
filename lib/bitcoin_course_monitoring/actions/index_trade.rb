@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики получения информации о торгах
     #
-    class IndexTrade
+    class IndexTrade < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [Integer] user_id
@@ -23,9 +23,12 @@ module BitcoinCourseMonitoring
       # @raise [BitcoinCourseMonitoring::Tokens::Manager::Errors::Token::Expired]
       #   если токен авторизации не действителен
       #
-      def initialize(token)
+      def initialize(params, token)
         super(token)
+        @closed = params[:closed]
       end
+
+      attr_reader :closed
 
       # Возвращает список записей торгов
       #
@@ -56,8 +59,9 @@ module BitcoinCourseMonitoring
       #
       def trades
         BitcoinCourseMonitoring::Models::Trade
-        .where(user_id: user_id)
-        .select(:id, :start_course, :margin, :order_price, :created_at).naked.all
+          .where(user_id: user_id, closed: closed)
+          .select(:id, :start_course, :margin, :order_price, :created_at)
+          .naked.all
       end
     end
   end
