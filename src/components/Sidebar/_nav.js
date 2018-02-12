@@ -3,7 +3,7 @@ export default {
     items: [
       {
         name: 'Статистика биржи',
-        url: '/',
+        url: '/dashboard',
         icon: 'icon-chart',
         // badge: {
         //   variant: 'info',
