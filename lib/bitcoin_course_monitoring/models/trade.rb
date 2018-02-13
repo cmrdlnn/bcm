@@ -21,6 +21,11 @@ module BitcoinCourseMonitoring
     #   @return [String]
     #     секретный ключ
     #
+    # @!attribute pair
+    #   Валютная пара
+    #   @return [String]
+    #     валютная пара
+    #
     # @!attribute start_course
     #   Начальный курс торгов
     #   @return [Float]
@@ -36,6 +41,11 @@ module BitcoinCourseMonitoring
     #   @return [Float]
     #     стоимость покупки
     #
+    # @!attribute created_at
+    #   Время создания записи
+    #   @return [Time]
+    #     время создания записи
+    #
     # @!attribute user_id
     #   Идентификатор записи пользователя
     #   @return [Integer]
@@ -49,6 +59,100 @@ module BitcoinCourseMonitoring
     class Trade < Sequel::Model
       # Отношения
       many_to_one :user
+      one_to_many :orders
+
+      # Поддержка временных меток
+      #
+      plugin :timestamps, update_on_create: true
+
+      after_create :start_trade
+
+      COMMISSION = 1.002
+
+      def initialize
+        @min = $order_book[:ask_top].to_f
+        @max = $order_book[:bid_top].to_f
+      end
+
+      attr_reader :bought
+
+      # Запускает поток в котором идет процесс торгов, создаються ордера на покупку и на продажу
+      #
+      #
+      #
+      #
+      def start_trade
+        Thread.new do
+          loop do
+            book = $order_book
+            bid = book[:bid_top].to_f
+            ask = book[:ask_top].to_f
+            if bought
+              if bid >= max
+                @max = bid
+              elsif start_course != max && (max - bid) / (max - start_course) <= marging
+                @bought = false
+                update(start_course: ask)
+                @min = ask
+                price = bid - 0.000001
+                quantity = order_price / price * COMMISSION
+                type = 'sell'
+                create_data = create_order_data(price, quantity, type)
+                Order.create(create_data)
+              end
+            else
+              if ask <= min
+                @min = ask
+              elsif start_course == min && ask > min
+                @bought = true
+                update(start_course: bid)
+                @max = bid
+                price = ask + 0.000001
+                quantity = order_price / price * COMMISSION
+                type = 'buy'
+                create_data = create_order_data(price, quantity, type)
+                Order.create(create_data)
+              elsif start_course != min && (ask - min) / (start_course - min) >= marging
+                @bought = true
+                update(start_course: bid)
+                @max = bid
+                price = ask + 0.000001
+                quantity = order_price / price * COMMISSION
+                type = 'buy'
+                create_data = create_order_data(price, quantity, type)
+                Order.create(create_data)
+              end
+            end
+            sleep 1
+          end
+        end
+      end
+
+      private
+
+      # Подготавливает данные для создания ордера
+      #
+      # param [Float] price
+      #  цена за еденицу
+      #
+      # param [Float] quantity
+      #  количество
+      #
+      # param [String] type
+      #  тип ордера
+      #
+      # return [Hash]
+      #  данные для создания ордера
+      #
+      def create_order_data(price, quantity, type)
+        {
+           type: type,
+           price: price,
+           quantity: quantity,
+           pair: pair,
+           trade_id: id
+        }
+      end
     end
   end
 end

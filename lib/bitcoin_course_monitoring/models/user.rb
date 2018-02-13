@@ -40,6 +40,11 @@ module BitcoinCourseMonitoring
     #   @return [String]
     #     дайджест пароля и соли
     #
+    # @!attribute created_at
+    #   Время создания записи
+    #   @return [Time]
+    #     время создания записи
+    #
     # @!attribute trades
     #   Записи торгов
     #   @return [Array<BitcoinCourseMonitoring::Models::Trade>]
@@ -50,6 +55,10 @@ module BitcoinCourseMonitoring
 
       # Отношения
       one_to_many :trades
+
+      # Поддержка временных меток
+      #
+      plugin :timestamps, update_on_create: true
 
       # Устанавливает пороль и возвращает его
       #

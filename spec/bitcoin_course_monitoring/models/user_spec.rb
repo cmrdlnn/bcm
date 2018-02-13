@@ -63,7 +63,7 @@ RSpec.describe BitcoinCourseMonitoring::Models::User do
     subject(:instance) { create(:user) }
 
     methods =
-      %i(role login salt password_hash id password? update setup_password trades)
+      %i(role login salt password_hash id created_at password? update setup_password trades)
     it { is_expected.to respond_to(*methods) }
   end
 
@@ -88,6 +88,18 @@ RSpec.describe BitcoinCourseMonitoring::Models::User do
       subject { result }
 
       it { is_expected.to be_a(String) }
+    end
+  end
+
+  describe '#created_at' do
+    subject(:result) { instance.created_at }
+
+    let(:instance) { create(:user) }
+
+    describe 'result' do
+      subject { result }
+
+      it { is_expected.to be_a(Time) }
     end
   end
 

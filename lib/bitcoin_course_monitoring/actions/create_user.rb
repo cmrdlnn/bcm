@@ -57,6 +57,7 @@ module BitcoinCourseMonitoring
       #  запись пользователя
       #
       def send_password(password, user)
+        puts password
         opts = {
           login: user.login,
           password: password

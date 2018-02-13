@@ -11,5 +11,6 @@ FactoryGirl.define do
     role          {'trader'}
     salt          { SecureRandom.random_bytes(32) }
     password_hash { SecureRandom.random_bytes(32) }
+    created_at    { Time.now }
   end
 end

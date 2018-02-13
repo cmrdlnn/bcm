@@ -83,7 +83,7 @@ module BitcoinCourseMonitoring
           JSON.parse(json, symbolize_names: true)
         end
 
-        Trade.new.start
+        #Trade.new.start
       end
     end
   end

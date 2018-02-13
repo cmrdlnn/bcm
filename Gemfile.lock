@@ -27,6 +27,7 @@ GEM
     dotenv (2.2.1)
     et-orbi (1.0.9)
       tzinfo
+    event_emitter (0.2.6)
     eventmachine (1.2.5)
     factory_girl (4.9.0)
       activesupport (>= 3.0.0)
@@ -98,6 +99,10 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
+    websocket (1.2.5)
+    websocket-client-simple (0.3.0)
+      event_emitter
+      websocket
     yard (0.9.12)
 
 PLATFORMS
@@ -122,6 +127,7 @@ DEPENDENCIES
   sinatra
   thin
   webmock
+  websocket-client-simple
   yard
   yard-sinatra!
 

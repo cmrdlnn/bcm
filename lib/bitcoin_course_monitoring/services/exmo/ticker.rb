@@ -26,18 +26,18 @@ module BitcoinCourseMonitoring
         attr_reader :url
 
         # Запускает поток с get запросом на апи биржи
-        # и получает данные о состоянии курса каждую секунду
-        # обновляя каждый рах глобальную переменную
+        # и получает данные о состоянии курса каждые 3 секунды
+        # обновляя каждый раз глобальную переменную
         #
         #
         def get_ticker
           Thread.new do
             loop do
-              sleep 1
+              sleep 3
               response = RestClient.get(url)
               pairs = JSON.parse(response.body, symbolize_names: true)
               pair = pairs[:BTC_USD]
-              $pair = pair if pair
+              $pair = pair
             end
           end
         end

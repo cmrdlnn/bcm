@@ -34,7 +34,7 @@ module BitcoinCourseMonitoring
         #   200
         #
         post '/api/auth' do
-          content, token = BitcoinCourseMonitoring::Actions::Auth.new(params).auth
+          content, token = Actions::Auth.new(params).auth
           headers 'X-CSRF-Token' => token
           body content.to_json
         end
@@ -50,7 +50,7 @@ module BitcoinCourseMonitoring
         #
         get '/api/auth/check' do
           content, new_token =
-            BitcoinCourseMonitoring::Actions::CheckAuth.new(token).check
+            Actions::CheckAuth.new(token).check
           headers 'X-CSRF-Token' => new_token
           status :ok
           body content.to_json
@@ -63,7 +63,7 @@ module BitcoinCourseMonitoring
         #
         get '/api/users' do
           content, new_token =
-            BitcoinCourseMonitoring::Actions::IndexUser.new(token).index
+            Actions::IndexUser.new(token).index
           headers 'X-CSRF-Token' => new_token
           status :ok
           body content.to_json
@@ -79,7 +79,7 @@ module BitcoinCourseMonitoring
         #
         get '/api/users/:id' do |id|
           content, new_token =
-            BitcoinCourseMonitoring::Actions::ShowUser.new(id, token).show
+            Actions::ShowUser.new(id, token).show
           headers 'X-CSRF-Token' => new_token
           status :ok
           body content.to_json
@@ -95,7 +95,7 @@ module BitcoinCourseMonitoring
         #
         put '/api/users/:id' do |id|
           content, new_token =
-            BitcoinCourseMonitoring::Actions::UpdateUser.new(id, params, token).update_user
+            Actions::UpdateUser.new(id, params, token).update_user
           headers 'X-CSRF-Token' => new_token
           status :ok
           body content.to_json
@@ -111,7 +111,7 @@ module BitcoinCourseMonitoring
         #
         post '/api/users' do
           content, new_token =
-            BitcoinCourseMonitoring::Actions::CreateUser.new(params, token).create_user
+            Actions::CreateUser.new(params, token).create_user
           headers 'X-CSRF-Token' => new_token
           status :created
           body content.to_json
@@ -127,7 +127,7 @@ module BitcoinCourseMonitoring
         #
         delete '/api/users/:id' do |id|
           new_token =
-            BitcoinCourseMonitoring::Actions::DeleteUser.new(id, token).delete_user
+            Actions::DeleteUser.new(id, token).delete_user
           headers 'X-CSRF-Token' => new_token
           status :no_content
         end
@@ -139,7 +139,7 @@ module BitcoinCourseMonitoring
         #
         get '/api/trades' do
           content, new_token =
-            BitcoinCourseMonitoring::Actions::IndexTrade.new(params, token).index
+            Actions::IndexTrade.new(params, token).index
           headers 'X-CSRF-Token' => new_token
           status :ok
           body content.to_json
@@ -154,9 +154,28 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/trades/:id' do |id|
-          content, new_token =
-            BitcoinCourseMonitoring::Actions::ShowTrade.new(id, token).show
+          trade, balances, new_token =
+            Actions::ShowTrade.new(id, token).show
           headers 'X-CSRF-Token' => new_token
+          content = [trade, balances]
+          status :ok
+          body content.to_json
+        end
+
+        # Возвращает информацию об учётной записи пользователя на бирже
+        #
+        # @param [String] id
+        #  идентификатор записи торгов
+        #
+        # @return [Status]
+        #  200
+        #
+        get '/api/trades/user_info' do
+          key = params[:key]
+          secret = params[:secret]
+          content = Services::Exmo::UserInfo
+                    .new(key, secret)
+                    .user_info
           status :ok
           body content.to_json
         end
@@ -171,7 +190,7 @@ module BitcoinCourseMonitoring
         #
         put '/api/trades/:id' do |id|
           content, new_token =
-            BitcoinCourseMonitoring::Actions::UpdateTrade.new(id, params, token).update_trade
+            Actions::UpdateTrade.new(id, params, token).update_trade
           headers 'X-CSRF-Token' => new_token
           status :ok
           body content.to_json
@@ -187,7 +206,7 @@ module BitcoinCourseMonitoring
         #
         post '/api/trades' do
           content, new_token =
-            BitcoinCourseMonitoring::Actions::CreateTrade.new(params, token).create_trade
+            Actions::CreateTrade.new(params, token).create_trade
           headers 'X-CSRF-Token' => new_token
           status :created
           body content.to_json
@@ -199,8 +218,7 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/order_book' do
-          content =
-            BitcoinCourseMonitoring::Services::Exmo::OrderBook.new(params).order_book
+          content = $order_book
           status :ok
           body content.to_json
         end
@@ -213,19 +231,6 @@ module BitcoinCourseMonitoring
         get '/api/course' do
           content = $pair
           status :ok
-          body content.to_json
-        end
-
-        # Возвращает информацию об учётной записи пользователя на бирже
-        #
-        # @return [Status]
-        #  200
-        #
-        post '/api/user_info' do
-          content = BitcoinCourseMonitoring::Services::Exmo::UserInfo
-                    .new(params)
-                    .user_info
-
           body content.to_json
         end
 

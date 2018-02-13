@@ -7,27 +7,26 @@ module BitcoinCourseMonitoring
     module Exmo
       # @author Алейников Максим <m.v.aleinikov@gmail.com>
       #
-      # Класс возвращающий информацию об аккаунте пользователя
+      # Класс создающий ордер на покупку или продажу
       #
-      class UserInfo < BaseAuthenticated
+      class OrderCreate < BaseAuthenticated
         # Инициализирует клас объекта
         #
-        def initialize(key, secret)
-          @url = 'https://api.exmo.com/v1/user_info/'
-          super(key, secret)
+        def initialize(key, secret, params)
+          @url = 'https://api.exmo.com/v1/order_create/'
+          super(key, secret, params)
         end
 
         attr_reader :url
 
-        # Возвращает информацию об аккаунте пользователя
+        # Создает ордер на покупку или продажу
         #
         # @return [Hash]
         #  ассоциативный массив с данными аккаунта
         #
-        def user_info
+        def order_create
           response = RestClient.post(url, payload, headers)
-          info = JSON.parse(response, symbolize_names: true)
-          balances = info[:balances].slice(:USD, :BTC)
+          JSON.parse(response, symbolize_names: true)
         end
       end
     end

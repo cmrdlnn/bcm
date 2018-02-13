@@ -39,7 +39,7 @@ module BitcoinCourseMonitoring
       #
       def show
         check_trader!
-        [trade, refresh_token]
+        [trade, balances, refresh_token]
       end
 
       private
@@ -62,6 +62,19 @@ module BitcoinCourseMonitoring
       def trade
         BitcoinCourseMonitoring::Models::Trade
         .with_pk!(id).values
+      end
+
+      # Возвращает баланс аккаунта пользователя
+      #
+      # @return [Hash]
+      #  баланс аккаунта пользователя
+      #
+      def balances
+        key = trade.key
+        secret = trade.secret
+        Services::Exmo::UserInfo
+                        .new(key, secret)
+                        .user_info
       end
     end
   end
