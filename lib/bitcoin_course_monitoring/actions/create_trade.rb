@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики создания записи торгов
     #
-    class CreateTrade
+    class CreateTrade < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [Hash] params

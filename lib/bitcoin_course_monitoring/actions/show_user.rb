@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики получения информации о пользователе
     #
-    class ShowUser
+    class ShowUser < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [#to_s] token

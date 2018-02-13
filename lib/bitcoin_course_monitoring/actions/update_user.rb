@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики обновления записи пользователя
     #
-    class UpdateUser
+    class UpdateUser < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [Integer] id

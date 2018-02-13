@@ -57,12 +57,11 @@ module BitcoinCourseMonitoring
       #  запись пользователя
       #
       def send_password(password, user)
-        puts password
         opts = {
           login: user.login,
           password: password
         }
-        BitcoinCourseMonitoring::Services::Mailer.send_mail(opts)
+        BitcoinCourseMonitoring::Services::Mailer.user_created(opts)
       end
 
       # Проверяет являеться ли пользователь администратором

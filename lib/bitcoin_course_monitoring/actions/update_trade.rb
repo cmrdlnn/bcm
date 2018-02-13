@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики обновления записи торгов
     #
-    class UpdateTrade
+    class UpdateTrade < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [Integer] id

@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики получения информации о записи торгов
     #
-    class ShowTrade
+    class ShowTrade < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [Integer] id

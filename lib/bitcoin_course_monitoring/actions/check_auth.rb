@@ -53,7 +53,7 @@ module BitcoinCourseMonitoring
       #  значение атрибутов записи пользователя
       #
       def user_values
-        user.values.except(:password_hash, :salt)
+        user.values.except(:confirm_token, :new_email, :password_hash, :salt)
       end
     end
   end

@@ -6,8 +6,7 @@ export default function (data) {
   return (dispatch, getState) => {
     const { id } = getState().user;
 
-    JSONRequest('/api/users/change_password', { id, ...data })
-      .then(response => response.json())
+    JSONRequest('/api/users/change_password', { id, ...data }, 'PATCH')
       .then(() => {
         dispatch(
           showAlert('Пароль успешно изменён', 'success'),
