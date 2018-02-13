@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'net/https'
+require_relative "base/base_authenticated"
 
 module BitcoinCourseMonitoring
   module Services
@@ -13,7 +13,7 @@ module BitcoinCourseMonitoring
         # Инициализирует клас объекта
         #
         def initialize(key, secret, params)
-          @url = 'https://api.exmo.com/v1/order_cansel/'
+          @url = 'https://api.exmo.com/v1/order_cancel/'
           super(key, secret, params)
         end
 

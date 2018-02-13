@@ -78,9 +78,6 @@ module BitcoinCourseMonitoring
 
       # Запускает поток в котором идет процесс торгов, создаються ордера на покупку и на продажу
       #
-      #
-      #
-      #
       def start_trade
         Thread.new do
           loop do

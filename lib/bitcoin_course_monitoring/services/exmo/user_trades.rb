@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'net/https'
+require_relative "base/base_authenticated"
 
 module BitcoinCourseMonitoring
   module Services

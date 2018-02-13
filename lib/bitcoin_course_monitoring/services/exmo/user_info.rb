@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'net/https'
+require_relative "base/base_authenticated"
 
 module BitcoinCourseMonitoring
   module Services
@@ -27,7 +27,7 @@ module BitcoinCourseMonitoring
         def user_info
           response = RestClient.post(url, payload, headers)
           info = JSON.parse(response, symbolize_names: true)
-          balances = info[:balances].slice(:USD, :BTC)
+          balances = info.slice(:balances, :reserved)
         end
       end
     end
