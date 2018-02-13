@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики удаления записи пользователя
     #
-    class DeleteUser
+    class DeleteUser < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [#to_s] token
@@ -62,7 +62,7 @@ module BitcoinCourseMonitoring
       #
       def user
         BitcoinCourseMonitoring::Models::User
-        .with_pk!(id)
+          .with_pk!(id)
       end
     end
   end
