@@ -8,7 +8,7 @@ module BitcoinCourseMonitoring
     #
     # Класс бизнес-логики получения информации о записи торгов
     #
-    class ShowTrade
+    class ShowTrade < Base::AuthorizedAction
       # Инициализирует объект класса
       #
       # @param [Integer] id
@@ -60,8 +60,7 @@ module BitcoinCourseMonitoring
       #  запись торгов
       #
       def trade
-        BitcoinCourseMonitoring::Models::Trade
-        .with_pk!(id).values
+        BitcoinCourseMonitoring::Models::Trade.with_pk!(id).values
       end
 
       # Возвращает баланс аккаунта пользователя
@@ -72,9 +71,7 @@ module BitcoinCourseMonitoring
       def balances
         key = trade.key
         secret = trade.secret
-        Services::Exmo::UserInfo
-                        .new(key, secret)
-                        .user_info
+        Services::Exmo::UserInfo.new(key, secret).user_info
       end
     end
   end

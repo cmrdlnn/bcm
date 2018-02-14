@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require_relative 'base/authorized_action'
-
 module BitcoinCourseMonitoring
   # @author Алейников Максим <m.v.aleinikov@gmail.com>
   #

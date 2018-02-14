@@ -69,16 +69,13 @@ module BitcoinCourseMonitoring
 
       COMMISSION = 1.002
 
-      def initialize
-        @min = $order_book[:ask_top].to_f
-        @max = $order_book[:bid_top].to_f
-      end
-
       attr_reader :bought
 
       # Запускает поток в котором идет процесс торгов, создаються ордера на покупку и на продажу
       #
       def start_trade
+        @min = $order_book[:ask_top].to_f
+        @max = $order_book[:bid_top].to_f
         Thread.new do
           loop do
             book = $order_book
@@ -108,7 +105,7 @@ module BitcoinCourseMonitoring
                 quantity = order_price / price * COMMISSION
                 type = 'buy'
                 create_data = create_order_data(price, quantity, type)
-                Order.create(create_data)
+                Order.create(create_data) if check_balance!
               elsif start_course != min && (ask - min) / (start_course - min) >= marging
                 @bought = true
                 update(start_course: bid)
@@ -117,7 +114,7 @@ module BitcoinCourseMonitoring
                 quantity = order_price / price * COMMISSION
                 type = 'buy'
                 create_data = create_order_data(price, quantity, type)
-                Order.create(create_data)
+                Order.create(create_data) if check_balance!
               end
             end
             sleep 1
@@ -129,16 +126,16 @@ module BitcoinCourseMonitoring
 
       # Подготавливает данные для создания ордера
       #
-      # param [Float] price
+      # @param [Float] price
       #  цена за еденицу
       #
-      # param [Float] quantity
+      # @param [Float] quantity
       #  количество
       #
-      # param [String] type
+      # @param [String] type
       #  тип ордера
       #
-      # return [Hash]
+      # @return [Hash]
       #  данные для создания ордера
       #
       def create_order_data(price, quantity, type)
@@ -149,6 +146,16 @@ module BitcoinCourseMonitoring
            pair: pair,
            trade_id: id
         }
+      end
+
+      # Проверяет баланс пользователя
+      #
+      # @return [Boolean]
+      #  результат проверки
+      #
+      def check_balance!
+        balance = Services::Exmo::UserInfo.new(key, secret).user_info
+        balance[:balances][:USD] >= order_price
       end
     end
   end

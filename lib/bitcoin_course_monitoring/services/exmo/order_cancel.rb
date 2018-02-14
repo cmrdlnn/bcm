@@ -24,7 +24,7 @@ module BitcoinCourseMonitoring
         # @return [Hash]
         #  ассоциативный массив с данными аккаунта
         #
-        def order_cansel
+        def order_cancel
           response = RestClient.post(url, payload, headers)
           JSON.parse(response, symbolize_names: true)
         end

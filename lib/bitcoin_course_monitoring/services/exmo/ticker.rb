@@ -42,7 +42,7 @@ module BitcoinCourseMonitoring
           end
         end
 
-        Ticker.new.get_ticker
+        #Ticker.new.get_ticker
       end
     end
   end
