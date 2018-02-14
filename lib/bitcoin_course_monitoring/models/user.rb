@@ -65,9 +65,9 @@ module BitcoinCourseMonitoring
       # return [String]
       #  созданый пароль
       #
-      def setup_password
+      def setup_password(new_password = nil)
         update(
-          password_hash: password_hash_,
+          password_hash: password_hash_(new_password),
           salt: salt_
         )
         password_

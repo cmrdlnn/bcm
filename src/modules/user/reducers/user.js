@@ -1,6 +1,5 @@
 import {
   AUTH_CHECK,
-  CHANGE_EMAIL,
   FETCH_INFO,
   LOGOUT,
   SIGN_IN,
@@ -10,9 +9,6 @@ export default function reducer(state = { fetching: true }, { type, payload }) {
   switch (type) {
     case AUTH_CHECK:
       return payload || {};
-
-    case CHANGE_EMAIL:
-      return payload;
 
     case FETCH_INFO:
       return { ...state, ...payload };

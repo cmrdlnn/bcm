@@ -101,6 +101,19 @@ module BitcoinCourseMonitoring
           body content.to_json
         end
 
+        patch '/api/users/change_email' do
+          address = request.env['HTTP_HOST']
+          new_token =
+            Actions::ChangeEmail.new(params, token, address).change_email
+          headers 'X-CSRF-Token' => new_token
+        end
+
+        patch '/api/users/change_password' do
+          new_token =
+            Actions::ChangePassword.new(params, token).change_password
+          headers 'X-CSRF-Token' => new_token
+        end
+
         # Создает запись пользователя
         #
         # @param [String] body
@@ -232,6 +245,11 @@ module BitcoinCourseMonitoring
           content = $pair
           status :ok
           body content.to_json
+        end
+
+        get '/confirm/:confirm_token' do |confirm_token|
+          Actions::ChangeEmail.confirm(confirm_token)
+          erb :index
         end
 
         # Задаёт index.erb view по умолчанию для всех get запросов

@@ -35,15 +35,25 @@ class Settings extends Component {
       modalBody: 'На новый e-mail придёт письмо с инструкцией',
       modalHeader: 'Вы действительно хотите изменить свой e-mail?',
       modalIsOpen: true,
-      onConfirm: () => this.props.changeEmail(data),
+      onConfirm: () => {
+        this.toggle();
+        this.props.changeEmail(data);
+      },
     });
   }
 
   changePassword = (data) => {
     const { showAlert, changePassword } = this.props;
 
-    if (data.password !== data.confirm) {
+    if (data.new_password !== data.confirm_password) {
+      this.toggle();
       showAlert('Пароли не совпадают');
+      return;
+    }
+
+    if (data.new_password.length < 6) {
+      this.toggle();
+      showAlert('Новый пароль слишком короткий');
       return;
     }
 
@@ -51,7 +61,10 @@ class Settings extends Component {
       modalBody: null,
       modalHeader: 'Вы действительно хотите изменить свой пароль?',
       modalIsOpen: true,
-      onConfirm: () => this.props.changePassword(data),
+      onConfirm: () => {
+        this.toggle();
+        this.props.changePassword(data);
+      },
     });
   }
 
@@ -78,7 +91,7 @@ class Settings extends Component {
                     <h3>e-mail</h3>
                     <Field
                       addon="@"
-                      name="login"
+                      name="new_email"
                       placeholder="Введите новый e-mail"
                       required
                       type="email"
@@ -97,7 +110,7 @@ class Settings extends Component {
                   />
                   <Field
                     addon={<i className="icon-lock" />}
-                    name="password"
+                    name="new_password"
                     placeholder="Введите новый пароль"
                     required
                     title="Новый пароль"
@@ -105,7 +118,7 @@ class Settings extends Component {
                   />
                   <Field
                     addon={<i className="icon-lock" />}
-                    name="confirm"
+                    name="confirm_password"
                     placeholder="Повторите новый пароль"
                     required
                     title="Повторите пароль"

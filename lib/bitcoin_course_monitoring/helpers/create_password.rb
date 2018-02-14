@@ -67,8 +67,8 @@ module BitcoinCourseMonitoring
       # @return [String]
       #  хэш-функции sha256
       #
-      def password_hash_
-        concat_salt = "#{password_}#{salt_}"
+      def password_hash_(souce_password = nil)
+        concat_salt = "#{souce_password || password_}#{salt_}"
         OpenSSL::Digest.digest("SHA256", concat_salt)
       end
     end

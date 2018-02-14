@@ -5,10 +5,12 @@ import { Button } from 'reactstrap';
 class Form extends Component {
   handelSubmit = (e) => {
     e.preventDefault();
-    const json = Array.from(e.target.elements).reduce((result, element) => {
+    const form = e.target;
+    const json = Array.from(form.elements).reduce((result, element) => {
       if (element.name) result[element.name] = element.value;
       return result;
     }, {});
+    form.reset()
     this.props.onSubmit(json);
   }
 

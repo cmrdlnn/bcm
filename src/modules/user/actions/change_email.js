@@ -2,21 +2,17 @@ import { JSONRequest } from 'api';
 
 import { showAlert } from 'modules/alerts';
 
-import { CHANGE_EMAIL } from '../constants';
-
 export default function (data) {
   return (dispatch, getState) => {
     const { id } = getState().user;
 
-    JSONRequest('/api/users/change_email', { id, ...data })
-      .then(response => response.json())
-      .then((payload) => {
-        dispatch({
-          type: CHANGE_EMAIL,
-          payload,
-        });
+    JSONRequest('/api/users/change_email', { id, ...data }, 'PATCH')
+      .then(() => {
         dispatch(
-          showAlert('e-mail успешно изменён', 'success'),
+          showAlert(
+            'E-Mail успешно изменён, Вам необходимо подтвердить его смену, проверьте указанный адрес',
+            'success',
+          ),
         );
       });
   };
