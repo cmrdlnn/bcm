@@ -9,7 +9,14 @@ import Widget04 from './components/Widget04';
 
 class Widgets extends Component {
   componentWillMount() {
-    this.props.fetchTicker();
+    const { tickerFetch } = this.props;
+    tickerFetch();
+    this.ticker = setInterval(tickerFetch, 6000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.ticker);
+    this.ticker = null;
   }
 
   render() {
@@ -52,7 +59,7 @@ class Widgets extends Component {
 const mapStateToProps = ({ statistic: { ticker } }) => ({ ...ticker });
 
 const mapDispatchToProps = dispatch => ({
-  fetchTicker: bindActionCreators(fetchTicker, dispatch),
+  tickerFetch: bindActionCreators(fetchTicker, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Widgets);

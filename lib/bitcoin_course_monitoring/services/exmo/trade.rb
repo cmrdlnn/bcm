@@ -20,6 +20,7 @@ module BitcoinCourseMonitoring
           book = order_book
           @min = book[:ask_top].to_f
           @max = book[:bid_top].to_f
+          @trend = [min]
           @start_course = min
         end
 
@@ -27,7 +28,32 @@ module BitcoinCourseMonitoring
 
         attr_reader :max, :min
 
-        attr_reader :bought
+        attr_reader :bought, :trend
+
+        def profit(bid)
+          (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course
+        end
+
+        def uptrend?
+          trend_is_full? &&
+            trend.each_cons(2).all? { |prev_val, next_val| prev_val < next_val }
+        end
+
+        def downtrend?
+          trend_is_full? &&
+            trend.each_cons(2).all? { |prev_val, next_val| prev_val > next_val }
+        end
+
+        def update_trend(new_price)
+          print "update_trend: #{trend} => "
+          trend.shift if trend_is_full?
+          trend.push(new_price)
+          p trend.to_s
+        end
+
+        def trend_is_full?
+          trend.size >= 3
+        end
 
         def start
           Thread.new do
@@ -37,27 +63,28 @@ module BitcoinCourseMonitoring
               ask = book[:ask_top].to_f
               if bought
                 p "bid: #{bid}"
-                if bid >= max
-                  @max = bid
-                elsif start_course != max && (max - bid) / (max - start_course) <= 0.02
+                p "Прибыль: #{profit(bid)}"
+                @max = bid if bid > max
+                update_trend(bid) if bid != trend.last
+                profit = profit(bid)
+                if profit.positive? && downtrend? && (max - bid) / (max - start_course) >= 0.2
+                  p "profit: #{profit}"
                   @bought = false
-                  @start_course = ask
                   @min = ask
+                  @trend = [ask]
+                  @start_course = ask
                   p "SELL! #{bid - 0.000001}"
                 end
               else
                 p "ask: #{ask}"
-                if ask <= min
-                  @min = ask
-                elsif start_course == min && ask > min
+                p "Падение цены: #{start_course - ask}"
+                @min = ask if ask < min
+                update_trend(ask) if ask != trend.last
+                if uptrend?
                   @bought = true
-                  @start_course = bid
                   @max = bid
-                  p "BUY! #{ask + 0.000001}"
-                elsif start_course != min && (ask - min) / (start_course - min) >= 0.02
-                  @bought = true
-                  @start_course = bid
-                  @max = bid
+                  @trend = [bid]
+                  @start_course = ask + 0.000001
                   p "BUY! #{ask + 0.000001}"
                 end
               end
@@ -67,14 +94,14 @@ module BitcoinCourseMonitoring
         end
 
         def order_book
-          request('order_book', pair: 'BTC_USD')
+          request('order_book', pair: 'BTC_USD', limit: 1)
         end
 
         def pair_settings
           request('pair_settings')
         end
 
-        def request(to = '', params)
+        def request(to, params)
           response = RestClient.get("#{URL}/#{to}", params: params)
           parse(response.body)[PAIR]
         end
@@ -83,7 +110,7 @@ module BitcoinCourseMonitoring
           JSON.parse(json, symbolize_names: true)
         end
 
-        #Trade.new.start
+        Trade.new.start
       end
     end
   end

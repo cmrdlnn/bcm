@@ -16,7 +16,6 @@ module BitcoinCourseMonitoring
       # Класс возвращающий информацию по крсу валютных пар
       #
       class Ticker
-
         # Инициализирует клас объекта
         #
         def initialize
@@ -30,19 +29,11 @@ module BitcoinCourseMonitoring
         # обновляя каждый раз глобальную переменную
         #
         #
-        def get_ticker
-          Thread.new do
-            loop do
-              sleep 3
-              response = RestClient.get(url)
-              pairs = JSON.parse(response.body, symbolize_names: true)
-              pair = pairs[:BTC_USD]
-              $pair = pair
-            end
-          end
+        def ticker
+          response = RestClient.get(url)
+          pairs = JSON.parse(response.body, symbolize_names: true)
+          pairs[:BTC_USD]
         end
-
-        #Ticker.new.get_ticker
       end
     end
   end
