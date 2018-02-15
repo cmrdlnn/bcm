@@ -64,8 +64,14 @@ module BitcoinCourseMonitoring
       # Поддержка временных меток
       #
       plugin :timestamps, update_on_create: true
+      plugin :instance_hooks
 
-      after_create :start_trade
+      # Запускает логику торгов после создания модели.
+      #
+      def after_create
+        super
+        start_trade
+      end
 
       COMMISSION = 1.002
 
@@ -74,8 +80,8 @@ module BitcoinCourseMonitoring
       # Запускает поток в котором идет процесс торгов, создаються ордера на покупку и на продажу
       #
       def start_trade
-        @min = $order_book[:ask_top].to_f
-        @max = $order_book[:bid_top].to_f
+        min = $order_book[:ask_top].to_f
+        max = $order_book[:bid_top].to_f
         Thread.new do
           loop do
             book = $order_book
@@ -83,11 +89,11 @@ module BitcoinCourseMonitoring
             ask = book[:ask_top].to_f
             if bought
               if bid >= max
-                @max = bid
+                max = bid
               elsif start_course != max && (max - bid) / (max - start_course) <= marging
                 @bought = false
                 update(start_course: ask)
-                @min = ask
+                min = ask
                 price = bid - 0.000001
                 quantity = order_price / price * COMMISSION
                 type = 'sell'
@@ -96,7 +102,7 @@ module BitcoinCourseMonitoring
               end
             else
               if ask <= min
-                @min = ask
+                min = ask
               elsif start_course == min && ask > min
                 @bought = true
                 update(start_course: bid)
