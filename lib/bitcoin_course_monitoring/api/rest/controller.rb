@@ -183,7 +183,7 @@ module BitcoinCourseMonitoring
         # @return [Status]
         #  200
         #
-        get '/api/trades/user_info' do
+        post '/api/trades/user_info' do
           key = params[:key]
           secret = params[:secret]
           content = Services::Exmo::UserInfo
@@ -231,8 +231,7 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/order_book' do
-          content = $order_book
-          status :ok
+          content = Services::Exmo::OrderBook.new(params).order_book
           body content.to_json
         end
 
@@ -242,8 +241,7 @@ module BitcoinCourseMonitoring
         #  200
         #
         get '/api/course' do
-          content = $pair
-          status :ok
+          content = Services::Exmo::Ticker.new.ticker
           body content.to_json
         end
 

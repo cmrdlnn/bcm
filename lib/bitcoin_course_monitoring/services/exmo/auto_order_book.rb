@@ -33,7 +33,7 @@ module BitcoinCourseMonitoring
           end
         end
 
-        AutoOrderBook.new.get_order_book
+        # AutoOrderBook.new.get_order_book
       end
     end
   end

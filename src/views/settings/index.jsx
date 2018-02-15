@@ -88,7 +88,7 @@ class Settings extends Component {
               <CardBody>
                 { this.props.role !== 'trader' ? null : (
                   <Form onSubmit={this.changeEmail} buttonText="Изменить">
-                    <h3>e-mail</h3>
+                    <h4>E-Mail</h4>
                     <Field
                       addon="@"
                       name="new_email"
@@ -99,7 +99,7 @@ class Settings extends Component {
                   </Form>
                 )}
                 <Form onSubmit={this.changePassword} buttonText="Изменить">
-                  <h3>Пароль</h3>
+                  <h4>Пароль</h4>
                   <Field
                     addon={<i className="icon-lock" />}
                     name="old_password"

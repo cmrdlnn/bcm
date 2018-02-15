@@ -4,7 +4,7 @@ import { FETCH_INFO } from '../constants';
 
 export default function (data) {
   return (dispatch) => {
-    JSONRequest('/api/user_info', data)
+    JSONRequest('/api/trades/user_info', data)
       .then(response => response.json())
       .then((payload) => {
         dispatch({
