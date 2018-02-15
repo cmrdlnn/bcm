@@ -55,8 +55,14 @@ module BitcoinCourseMonitoring
       # Поддержка временных меток
       #
       plugin :timestamps, update_on_create: true
+      plugin :instance_hooks
 
-      after_create :order_create
+      # Запускает создание ордера на бирже после создания записи ордера в системе
+      #
+      def after_create
+        super
+        order_create
+      end
 
       # Создает ордер в системе exmo
       #
