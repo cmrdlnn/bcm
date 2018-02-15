@@ -31,6 +31,7 @@ import UsersPage from 'views/users/UsersPage';
 import UserCreation from 'views/users/UserCreation';
 import TradeCreationPage from 'views/trades/TradeCreationPage';
 import TradesPage from 'views/trades/TradesPage';
+import TradePage from 'views/trades/TradePage';
 
 class Full extends Component {
   render() {
@@ -56,10 +57,11 @@ class Full extends Component {
                     <Route path="/trades/create" name="TradeCreationPage" component={TradeCreationPage} />
                     <Route path="/trades/active" name="ActiveTrades" component={TradesPage} />
                     <Route path="/trades/archive" name="ClosedTrades" component={TradesPage} />
+                    <Route path="/trades/:id" name="TradePage" component={TradePage} />
+                    <Redirect from="*" to="/dashboard" />
                     { /*
                     <Route path="/trades/id" name="TradePage" component={TradePage} />
                     */ }
-                    <Redirect from="*" to="/dashboard" />
                   </Fragment>
                 )}
                 { /*

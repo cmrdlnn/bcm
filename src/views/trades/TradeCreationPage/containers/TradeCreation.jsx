@@ -11,6 +11,7 @@ import {
 } from 'reactstrap';
 
 import { fetchOrderBook } from 'modules/statistic';
+import { createTrade } from 'modules/trades';
 
 import Form from 'components/Form';
 import Field from 'components/Field';
@@ -24,7 +25,14 @@ class TradeCreation extends Component {
   }
 
   render() {
-    const { ask, ask_top: askTop, balances, bid, bid_top: bidTop } = this.props;
+    const {
+      ask,
+      ask_top: askTop,
+      balances,
+      bid,
+      bid_top: bidTop,
+      tradeCreate,
+    } = this.props;
 
     return (
       <Fragment>
@@ -35,7 +43,7 @@ class TradeCreation extends Component {
               Создание торгов
             </CardHeader>
             <CardBody>
-              <Form onSubmit={(e) => console.log(e)} buttonText="Создать">
+              <Form onSubmit={data => tradeCreate(data)} buttonText="Создать">
                 <Field
                   addon={<i className="fa fa-dollar" />}
                   helper="Цена в долларах за криптовалюту, по достижении которой система её купит"
@@ -51,6 +59,7 @@ class TradeCreation extends Component {
                   name="margin"
                   placeholder="Введите маржу"
                   required
+                  step="0.1"
                   title="Маржа"
                   type="number"
                 />
@@ -109,6 +118,7 @@ const mapStateToProps = ({
 
 const mapDispatchToProps = dispatch => ({
   fetchOrderBook: bindActionCreators(fetchOrderBook, dispatch),
+  tradeCreate: bindActionCreators(createTrade, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TradeCreation);

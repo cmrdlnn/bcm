@@ -1,2 +1,3 @@
 export const TRADE_CREATE = 'TRADES/CREATE';
+export const TRADES_FETCH = 'TRADES/FETCH';
 export const TRADES_INDEX = 'TRADES/INDEX';
