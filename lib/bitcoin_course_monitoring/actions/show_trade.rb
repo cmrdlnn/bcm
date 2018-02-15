@@ -54,13 +54,32 @@ module BitcoinCourseMonitoring
         raise 'Неавторизованный запрос'
       end
 
+      # Возвращает значение атрибутов запси торгов
+      #
+      # @return [Hash]
+      #  значение атрибутов
+      #
+      def trade_value
+        trade.value.merge(trade_orders)
+      end
+
+      # Возвращает ордера связанные с торгами
+      #
+      # @return [Hash]
+      #  ордера
+      #
+      def trade_orders
+        orders = trade.orders_dataset.naked.all
+        { orders: orders }
+      end
+
       # Возвращает запись торгов
       #
       # @return [Hash]
       #  запись торгов
       #
       def trade
-        BitcoinCourseMonitoring::Models::Trade.with_pk!(id).values
+        @trade ||= BitcoinCourseMonitoring::Models::Trade.with_pk!(id)
       end
 
       # Возвращает баланс аккаунта пользователя

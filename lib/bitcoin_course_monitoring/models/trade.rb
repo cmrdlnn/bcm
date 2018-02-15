@@ -84,6 +84,7 @@ module BitcoinCourseMonitoring
         max = $order_book[:bid_top].to_f
         Thread.new do
           loop do
+            brake if closed
             book = $order_book
             bid = book[:bid_top].to_f
             ask = book[:ask_top].to_f
