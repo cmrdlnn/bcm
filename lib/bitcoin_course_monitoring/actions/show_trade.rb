@@ -39,7 +39,7 @@ module BitcoinCourseMonitoring
       #
       def show
         check_trader!
-        [trade, balances, refresh_token]
+        [trade_values, balances, refresh_token]
       end
 
       private
@@ -59,8 +59,8 @@ module BitcoinCourseMonitoring
       # @return [Hash]
       #  значение атрибутов
       #
-      def trade_value
-        trade.value.merge(trade_orders)
+      def trade_values
+        trade.values.merge(trade_orders)
       end
 
       # Возвращает ордера связанные с торгами

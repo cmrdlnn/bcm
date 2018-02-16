@@ -17,7 +17,7 @@ Sequel.migration do
       column :password_hash, :bytea
       column :confirm_token, :text, unique: true, default: nil
       column :new_email, :text, unique: true, default: nil
-      column :created_at, :timestamp, null: false, default: Time.now
+      column :created_at, :timestamp, null: false
     end
   end
 end
