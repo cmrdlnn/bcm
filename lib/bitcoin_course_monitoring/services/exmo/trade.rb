@@ -141,7 +141,7 @@ module BitcoinCourseMonitoring
           return false if balance.key?(:error)
           case type
           when 'buy'
-            balance[:balances][:USD] =< order_price
+            balance[:balances][:USD] <= order_price
           when 'sell'
             balance[:balances][:BTC] = 0
           end
