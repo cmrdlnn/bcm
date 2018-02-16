@@ -76,6 +76,24 @@ module BitcoinCourseMonitoring
             end
         end
 
+        private
+
+        def slope
+          numbers_avg = numbers_average
+          trend_size = trend.size
+          (sum_of_multiplication - trend_size * numbers_avg * values_average) /
+            (sum_of_squares_of_numbers - trend_size * numbers_avg ** 2)
+        end
+
+        def profit(bid)
+          (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course
+        end
+
+        def update_trend(new_price)
+          trend.shift if trend_is_full?
+          trend.push(new_price)
+        end
+
         def numbers_average
           (trend.size + 1) / 2.to_f
         end
@@ -101,40 +119,8 @@ module BitcoinCourseMonitoring
           slope > 0
         end
 
-        def slope
-          numbers_avg = numbers_average
-          trend_size = trend.size
-          (sum_of_multiplication - trend_size * numbers_avg * values_average) /
-            (sum_of_squares_of_numbers - trend_size * numbers_avg ** 2)
-        end
-
-        def order_book
-          request('order_book', pair: 'BTC_USD', limit: 1)
-        private
-
-        def profit(bid)
-          (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course
-        end
-
-        def uptrend?
-          trend_is_full? &&
-            trend.each_cons(2).all? { |prev_val, next_val| prev_val < next_val }
-        end
-
-        def downtrend?
-          trend_is_full? &&
-            trend.each_cons(2).all? { |prev_val, next_val| prev_val > next_val }
-        end
-
-        def update_trend(new_price)
-          print "update_trend: #{trend} => "
-          trend.shift if trend_is_full?
-          trend.push(new_price)
-          p trend.to_s
-        end
-
         def trend_is_full?
-          trend.size >= 3
+          trend.size >= TREND_SIZE
         end
 
         # Подготавливает данные для создания ордера
@@ -153,11 +139,11 @@ module BitcoinCourseMonitoring
         #
         def create_order_data(price, quantity, type)
           {
-             type: type,
-             price: price,
-             quantity: quantity,
-             pair: pair,
-             trade_id: trade_id
+            type: type,
+            price: price,
+            quantity: quantity,
+            pair: pair,
+            trade_id: trade_id
           }
         end
 

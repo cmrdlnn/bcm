@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Row } from 'reactstrap';
 
 import CredentialsForm from './containers/CredentialsForm';
@@ -15,10 +16,14 @@ class TradeCreationPage extends Component {
     this.state = { step: 0 };
   }
 
-  onNextStep = () => {
-    const { step } = this.state;
-    if (step + 1 >= steps.length) this.props.history.push('/');
-    this.setState({ step: step + 1 });
+  componentWillMount() {
+    console.log(this.props)
+
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps)
+    if (nextProps.balances) this.setState({ step: this.state.step + 1 });
   }
 
   render() {
@@ -27,11 +32,13 @@ class TradeCreationPage extends Component {
     return (
       <div className="animated fadeIn">
         <Row>
-          <Step onNextStep={this.onNextStep} />
+          <Step balances={this.props.balances} />
         </Row>
       </div>
     );
   }
 }
 
-export default TradeCreationPage;
+const mapStateToProps = ({ user: { balances } }) => ({ balances });
+
+export default connect(mapStateToProps)(TradeCreationPage);

@@ -108,13 +108,7 @@ class TradeCreation extends Component {
   }
 }
 
-const mapStateToProps = ({
-  statistic: { order_book },
-  user: { balances },
-}) => ({
-  ...order_book,
-  balances,
-});
+const mapStateToProps = ({ statistic: { order_book } }) => ({ ...order_book });
 
 const mapDispatchToProps = dispatch => ({
   fetchOrderBook: bindActionCreators(fetchOrderBook, dispatch),
