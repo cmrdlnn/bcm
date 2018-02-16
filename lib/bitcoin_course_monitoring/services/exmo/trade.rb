@@ -14,6 +14,8 @@ module BitcoinCourseMonitoring
         TREND_SIZE = 30
 
         def initialize(trade)
+          @key = trade.key
+          @secret = trade.secret
           @trade_id = trade.id
           @pair = trade.pair
           @margin = trade.margin
@@ -24,7 +26,7 @@ module BitcoinCourseMonitoring
           @start_course = trade.start_course
         end
 
-        attr_reader :margin, :order_price, :start_course, :trade_id, :pair
+        attr_reader :margin, :order_price, :start_course, :trade_id, :pair, :key, :secret
 
         attr_reader :max, :min
 
@@ -32,7 +34,8 @@ module BitcoinCourseMonitoring
 
         def start
             loop do
-              book = $order_book
+              brake if Models::Trade.with_pk(trade_id).closed
+              book = $order_book[:BTC_USD]
               bid = book[:bid_top].to_f
               ask = book[:ask_top].to_f
               if bought
@@ -48,9 +51,10 @@ module BitcoinCourseMonitoring
                   @trend = [ask]
                   @start_course = ask
                   price = bid - 0.000001
-                  quantity = order_price / price * (1 + COMMISSION)
+                  quantity = balance[:BTC]
                   type = 'sell'
                   create_data = create_order_data(price, quantity, type)
+                  next if check_balance!(type)
                   order = Models::Order.create(create_data)
                   p "SELL! #{bid - 0.000001} #{order.state}"
                 end
@@ -68,7 +72,8 @@ module BitcoinCourseMonitoring
                   quantity = order_price / price * (1 + COMMISSION)
                   type = 'buy'
                   create_data = create_order_data(price, quantity, type)
-                  order = Order.create(create_data) if check_balance!
+                  next if check_balance!(type)
+                  order = Order.create(create_data)
                   p "BUY! #{ask + 0.000001} #{order.state}"
                 end
               end
@@ -152,10 +157,20 @@ module BitcoinCourseMonitoring
         # @return [Boolean]
         #  результат проверки
         #
-        def check_balance!
-          balance = Services::Exmo::UserInfo.new(key, secret).user_info
+        def check_balance!(type)
           return false if balance.key?(:error)
-          balance[:balances][:USD] >= order_price
+          case type
+          when 'buy'
+            balance[:balances][:USD] <= order_price
+          when 'sell'
+            balance[:balances][:BTC] = 0
+          end
+        end
+
+        # Возвращает баланс аккаунта
+        #
+        def balance
+          balance = Services::Exmo::UserInfo.new(key, secret).user_info
         end
       end
     end
