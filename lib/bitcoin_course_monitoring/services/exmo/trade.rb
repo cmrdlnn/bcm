@@ -43,7 +43,7 @@ module BitcoinCourseMonitoring
                 @max = bid if bid > max
                 update_trend(bid) if bid != trend.last
                 profit = profit(bid)
-                if profit.positive? && downtrend? && (max - bid) / (max - start_course) >= 0.2
+                if profit.positive? && downtrend? && (max - bid) / (max - start_course.to_f) >= 0.2
                   p "profit: #{profit}"
                   @bought = false
                   @min = ask
@@ -68,7 +68,7 @@ module BitcoinCourseMonitoring
                   @trend = [bid]
                   @start_course = ask + 0.000001
                   price = ask + 0.000001
-                  quantity = order_price / price * (1 + COMMISSION)
+                  quantity = order_price.to_f / price * (1 + COMMISSION)
                   type = 'buy'
                   create_data = create_order_data(price, quantity, type)
                   next if check_balance!(type)
@@ -84,7 +84,7 @@ module BitcoinCourseMonitoring
         private
 
         def profit(bid)
-          (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course
+          (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course.to_f
         end
 
         def uptrend?
@@ -141,9 +141,9 @@ module BitcoinCourseMonitoring
           return false if balance.key?(:error)
           case type
           when 'buy'
-            balance[:balances][:USD] <= order_price
+            balance[:balances][:USD].to_f <= order_price
           when 'sell'
-            balance[:balances][:BTC] = 0
+            balance[:balances][:BTC].to_f = 0
           end
         end
 
