@@ -14,6 +14,8 @@ module BitcoinCourseMonitoring
 
         PAIR = :BTC_USD
 
+        TREND_SIZE = 30
+
         def initialize
           @margin = 0.02
           @order_price = 10
@@ -52,11 +54,10 @@ module BitcoinCourseMonitoring
         end
 
         def trend_is_full?
-          trend.size >= 3
+          trend.size >= TREND_SIZE
         end
 
         def start
-          Thread.new do
             loop do
               book = order_book
               bid = book[:bid_top].to_f
@@ -67,7 +68,7 @@ module BitcoinCourseMonitoring
                 @max = bid if bid > max
                 update_trend(bid) if bid != trend.last
                 profit = profit(bid)
-                if profit.positive? && downtrend? && (max - bid) / (max - start_course) >= 0.2
+                if profit.positive? && !positive_slope?
                   p "profit: #{profit}"
                   @bought = false
                   @min = ask
@@ -80,7 +81,7 @@ module BitcoinCourseMonitoring
                 p "Падение цены: #{start_course - ask}"
                 @min = ask if ask < min
                 update_trend(ask) if ask != trend.last
-                if uptrend?
+                if positive_slope?
                   @bought = true
                   @max = bid
                   @trend = [bid]
@@ -90,7 +91,38 @@ module BitcoinCourseMonitoring
               end
               sleep 1
             end
+        end
+
+        def numbers_average
+          (trend.size + 1) / 2.to_f
+        end
+
+        def values_average
+          trend.reduce(:+) / trend.size.to_f
+        end
+
+        def sum_of_squares_of_numbers
+          trend_size = trend.size
+          trend_size * (trend_size + 1) * (2 * trend_size + 1) / 6.to_f
+        end
+
+        def sum_of_multiplication
+          trend.each_with_index.inject(0) do |sum, (val, i)|
+            sum + (val * (i + 1))
           end
+        end
+
+        def positive_slope?
+          p slope
+          return unless trend_is_full?
+          slope > 0
+        end
+
+        def slope
+          numbers_avg = numbers_average
+          trend_size = trend.size
+          (sum_of_multiplication - trend_size * numbers_avg * values_average) /
+            (sum_of_squares_of_numbers - trend_size * numbers_avg ** 2)
         end
 
         def order_book
@@ -110,7 +142,7 @@ module BitcoinCourseMonitoring
           JSON.parse(json, symbolize_names: true)
         end
 
-        #Trade.new.start
+        Trade.new.start
       end
     end
   end

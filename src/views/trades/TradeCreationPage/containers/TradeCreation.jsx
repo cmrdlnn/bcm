@@ -13,11 +13,11 @@ import {
 import { fetchOrderBook } from 'modules/statistic';
 import { createTrade } from 'modules/trades';
 
-import Form from 'components/Form';
 import Field from 'components/Field';
+import Form from 'components/Form';
+import InfoRow from 'components/InfoRow';
 
 import OrderList from '../components/OrderList';
-import InfoRow from '../components/InfoRow';
 
 class TradeCreation extends Component {
   componentWillMount() {

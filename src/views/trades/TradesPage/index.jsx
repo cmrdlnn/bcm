@@ -21,9 +21,9 @@ class TradesPage extends Component {
   }
 
   render() {
-    const { trades } = this.props;
+    const { history, trades } = this.props;
     const { closed } = this.state;
-
+    console.log(this.props)
     return (
       <div className="animated fadeIn">
         <Card>
@@ -45,7 +45,11 @@ class TradesPage extends Component {
                 <tbody>
                   {
                     trades.map((trade, i) => (
-                      <tr key={i}>
+                      <tr
+                        key={trade.id}
+                        onClick={() => history.push(`/trades/${trade.id}`)}
+                        style={{ cursor: 'pointer' }}
+                      >
                         <td>{ trade.start_course }</td>
                         <td>{ trade.margin }</td>
                         <td>{ trade.order_price }</td>
@@ -67,7 +71,7 @@ class TradesPage extends Component {
   }
 }
 
-const mapStateToProps = ({ trades }) => ({ trades });
+const mapStateToProps = ({ trades: { all } }) => ({ trades: all });
 
 const mapDispatchToProps = dispatch => ({
   indexTrades: bindActionCreators(indexTrades, dispatch),

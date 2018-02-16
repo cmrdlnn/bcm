@@ -54,12 +54,12 @@ class Full extends Component {
                 ) : (
                   <Fragment>
                     <Route exact path="/dashboard" name="Dashboard" component={Dashboard} />
-                    <Route path="/trades/create" name="TradeCreationPage" component={TradeCreationPage} />
-                    <Route path="/trades/active" name="ActiveTrades" component={TradesPage} />
-                    <Route path="/trades/archive" name="ClosedTrades" component={TradesPage} />
+                    <Route exact path="/trades/create" name="TradeCreationPage" component={TradeCreationPage} />
+                    <Route exact path="/trades/active" name="ActiveTrades" component={TradesPage} />
+                    <Route exact path="/trades/archive" name="ClosedTrades" component={TradesPage} />
                     <Route path="/trades/:id" name="TradePage" component={TradePage} />
-                    <Redirect from="*" to="/dashboard" />
                     { /*
+                    <Redirect from="*" to="/dashboard" />
                     <Route path="/trades/id" name="TradePage" component={TradePage} />
                     */ }
                   </Fragment>
