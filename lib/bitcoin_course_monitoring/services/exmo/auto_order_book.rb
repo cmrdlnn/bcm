@@ -26,14 +26,19 @@ module BitcoinCourseMonitoring
           Thread.new do
             loop do
               sleep 1
-              response = RestClient.get(url, params: { limit: 100, pair: 'BTC_USD' })
+              begin
+              response =
+                RestClient.get(url, params: { limit: 100, pair: 'BTC_USD' }) {|response, request, result| response }
               order_book = JSON.parse(response.body, symbolize_names: true)
-              $order_book = order_book
+              $order_book = order_book unless order_book.key?(:error)
+              rescue SocketError => e
+                puts "In Socket error"
+              end
             end
           end
         end
 
-        # AutoOrderBook.new.get_order_book
+        AutoOrderBook.new.get_order_book
       end
     end
   end

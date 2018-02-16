@@ -5,61 +5,34 @@ module BitcoinCourseMonitoring
     module Exmo
       # @author Алейников Максим <m.v.aleinikov@gmail.com>
       #
-      # Класс возвращающий информацию по крсу валютных пар
+      # Класс запускающий процесс торгов
       #
       class Trade
+
         COMMISSION = 0.002
-
-        URL = 'https://api.exmo.com/v1'.freeze
-
-        PAIR = :BTC_USD
 
         TREND_SIZE = 30
 
-        def initialize
-          @margin = 0.02
-          @order_price = 10
-          book = order_book
-          @min = book[:ask_top].to_f
-          @max = book[:bid_top].to_f
+        def initialize(trade)
+          @trade_id = trade.id
+          @pair = trade.pair
+          @margin = trade.margin
+          @order_price = trade.order_price
+          @min = $order_book[:ask_top].to_f
+          @max = $order_book[:bid_top].to_f
           @trend = [min]
-          @start_course = min
+          @start_course = trade.start_course
         end
 
-        attr_reader :margin, :order_price, :start_course
+        attr_reader :margin, :order_price, :start_course, :trade_id, :pair
 
         attr_reader :max, :min
 
         attr_reader :bought, :trend
 
-        def profit(bid)
-          (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course
-        end
-
-        def uptrend?
-          trend_is_full? &&
-            trend.each_cons(2).all? { |prev_val, next_val| prev_val < next_val }
-        end
-
-        def downtrend?
-          trend_is_full? &&
-            trend.each_cons(2).all? { |prev_val, next_val| prev_val > next_val }
-        end
-
-        def update_trend(new_price)
-          print "update_trend: #{trend} => "
-          trend.shift if trend_is_full?
-          trend.push(new_price)
-          p trend.to_s
-        end
-
-        def trend_is_full?
-          trend.size >= TREND_SIZE
-        end
-
         def start
             loop do
-              book = order_book
+              book = $order_book
               bid = book[:bid_top].to_f
               ask = book[:ask_top].to_f
               if bought
@@ -74,7 +47,12 @@ module BitcoinCourseMonitoring
                   @min = ask
                   @trend = [ask]
                   @start_course = ask
-                  p "SELL! #{bid - 0.000001}"
+                  price = bid - 0.000001
+                  quantity = order_price / price * (1 + COMMISSION)
+                  type = 'sell'
+                  create_data = create_order_data(price, quantity, type)
+                  order = Models::Order.create(create_data)
+                  p "SELL! #{bid - 0.000001} #{order.state}"
                 end
               else
                 p "ask: #{ask}"
@@ -86,7 +64,12 @@ module BitcoinCourseMonitoring
                   @max = bid
                   @trend = [bid]
                   @start_course = ask + 0.000001
-                  p "BUY! #{ask + 0.000001}"
+                  price = ask + 0.000001
+                  quantity = order_price / price * (1 + COMMISSION)
+                  type = 'buy'
+                  create_data = create_order_data(price, quantity, type)
+                  order = Order.create(create_data) if check_balance!
+                  p "BUY! #{ask + 0.000001} #{order.state}"
                 end
               end
               sleep 1
@@ -127,22 +110,67 @@ module BitcoinCourseMonitoring
 
         def order_book
           request('order_book', pair: 'BTC_USD', limit: 1)
+        private
+
+        def profit(bid)
+          (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course
         end
 
-        def pair_settings
-          request('pair_settings')
+        def uptrend?
+          trend_is_full? &&
+            trend.each_cons(2).all? { |prev_val, next_val| prev_val < next_val }
         end
 
-        def request(to, params)
-          response = RestClient.get("#{URL}/#{to}", params: params)
-          parse(response.body)[PAIR]
+        def downtrend?
+          trend_is_full? &&
+            trend.each_cons(2).all? { |prev_val, next_val| prev_val > next_val }
         end
 
-        def parse(json)
-          JSON.parse(json, symbolize_names: true)
+        def update_trend(new_price)
+          print "update_trend: #{trend} => "
+          trend.shift if trend_is_full?
+          trend.push(new_price)
+          p trend.to_s
         end
 
-        Trade.new.start
+        def trend_is_full?
+          trend.size >= 3
+        end
+
+        # Подготавливает данные для создания ордера
+        #
+        # @param [Float] price
+        #  цена за еденицу
+        #
+        # @param [Float] quantity
+        #  количество
+        #
+        # @param [String] type
+        #  тип ордера
+        #
+        # @return [Hash]
+        #  данные для создания ордера
+        #
+        def create_order_data(price, quantity, type)
+          {
+             type: type,
+             price: price,
+             quantity: quantity,
+             pair: pair,
+             trade_id: trade_id
+          }
+        end
+
+        # Проверяет баланс пользователя
+        #
+        # @return [Boolean]
+        #  результат проверки
+        #
+        def check_balance!
+          balance = Services::Exmo::UserInfo.new(key, secret).user_info
+          return false if balance.key?(:error)
+          balance[:balances][:USD] >= order_price
+        end
       end
     end
   end
