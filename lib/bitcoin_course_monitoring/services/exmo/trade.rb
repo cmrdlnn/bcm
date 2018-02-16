@@ -5,30 +5,78 @@ module BitcoinCourseMonitoring
     module Exmo
       # @author Алейников Максим <m.v.aleinikov@gmail.com>
       #
-      # Класс возвращающий информацию по крсу валютных пар
+      # Класс запускающий процесс торгов
       #
       class Trade
+
         COMMISSION = 0.002
 
-        URL = 'https://api.exmo.com/v1'.freeze
-
-        PAIR = :BTC_USD
-
-        def initialize
-          @margin = 0.02
-          @order_price = 10
-          book = order_book
-          @min = book[:ask_top].to_f
-          @max = book[:bid_top].to_f
+        def initialize(trade)
+          @trade_id = trade.id
+          @pair = trade.pair
+          @margin = trade.margin
+          @order_price = trade.order_price
+          @min = $order_book[:ask_top].to_f
+          @max = $order_book[:bid_top].to_f
           @trend = [min]
-          @start_course = min
+          @start_course = trade.start_course
         end
 
-        attr_reader :margin, :order_price, :start_course
+        attr_reader :margin, :order_price, :start_course, :trade_id, :pair
 
         attr_reader :max, :min
 
         attr_reader :bought, :trend
+
+        def start
+          Thread.new do
+            loop do
+              book = $order_book
+              bid = book[:bid_top].to_f
+              ask = book[:ask_top].to_f
+              if bought
+                p "bid: #{bid}"
+                p "Прибыль: #{profit(bid)}"
+                @max = bid if bid > max
+                update_trend(bid) if bid != trend.last
+                profit = profit(bid)
+                if profit.positive? && downtrend? && (max - bid) / (max - start_course) >= 0.2
+                  p "profit: #{profit}"
+                  @bought = false
+                  @min = ask
+                  @trend = [ask]
+                  @start_course = ask
+                  price = bid - 0.000001
+                  quantity = order_price / price * (1 + COMMISSION)
+                  type = 'sell'
+                  create_data = create_order_data(price, quantity, type)
+                  order = Models::Order.create(create_data)
+                  p "SELL! #{bid - 0.000001} #{order.state}"
+                end
+              else
+                p "ask: #{ask}"
+                p "Падение цены: #{start_course - ask}"
+                @min = ask if ask < min
+                update_trend(ask) if ask != trend.last
+                if uptrend?
+                  @bought = true
+                  @max = bid
+                  @trend = [bid]
+                  @start_course = ask + 0.000001
+                  price = ask + 0.000001
+                  quantity = order_price / price * (1 + COMMISSION)
+                  type = 'buy'
+                  create_data = create_order_data(price, quantity, type)
+                  order = Order.create(create_data) if check_balance!
+                  p "BUY! #{ask + 0.000001} #{order.state}"
+                end
+              end
+              sleep 1
+            end
+          end
+        end
+
+        private
 
         def profit(bid)
           (1 - COMMISSION) * bid - (1 + COMMISSION) * start_course
@@ -55,62 +103,40 @@ module BitcoinCourseMonitoring
           trend.size >= 3
         end
 
-        def start
-          Thread.new do
-            loop do
-              book = order_book
-              bid = book[:bid_top].to_f
-              ask = book[:ask_top].to_f
-              if bought
-                p "bid: #{bid}"
-                p "Прибыль: #{profit(bid)}"
-                @max = bid if bid > max
-                update_trend(bid) if bid != trend.last
-                profit = profit(bid)
-                if profit.positive? && downtrend? && (max - bid) / (max - start_course) >= 0.2
-                  p "profit: #{profit}"
-                  @bought = false
-                  @min = ask
-                  @trend = [ask]
-                  @start_course = ask
-                  p "SELL! #{bid - 0.000001}"
-                end
-              else
-                p "ask: #{ask}"
-                p "Падение цены: #{start_course - ask}"
-                @min = ask if ask < min
-                update_trend(ask) if ask != trend.last
-                if uptrend?
-                  @bought = true
-                  @max = bid
-                  @trend = [bid]
-                  @start_course = ask + 0.000001
-                  p "BUY! #{ask + 0.000001}"
-                end
-              end
-              sleep 1
-            end
-          end
+        # Подготавливает данные для создания ордера
+        #
+        # @param [Float] price
+        #  цена за еденицу
+        #
+        # @param [Float] quantity
+        #  количество
+        #
+        # @param [String] type
+        #  тип ордера
+        #
+        # @return [Hash]
+        #  данные для создания ордера
+        #
+        def create_order_data(price, quantity, type)
+          {
+             type: type,
+             price: price,
+             quantity: quantity,
+             pair: pair,
+             trade_id: trade_id
+          }
         end
 
-        def order_book
-          request('order_book', pair: 'BTC_USD', limit: 1)
+        # Проверяет баланс пользователя
+        #
+        # @return [Boolean]
+        #  результат проверки
+        #
+        def check_balance!
+          balance = Services::Exmo::UserInfo.new(key, secret).user_info
+          return false if balance.key?(:error)
+          balance[:balances][:USD] >= order_price
         end
-
-        def pair_settings
-          request('pair_settings')
-        end
-
-        def request(to, params)
-          response = RestClient.get("#{URL}/#{to}", params: params)
-          parse(response.body)[PAIR]
-        end
-
-        def parse(json)
-          JSON.parse(json, symbolize_names: true)
-        end
-
-        #Trade.new.start
       end
     end
   end

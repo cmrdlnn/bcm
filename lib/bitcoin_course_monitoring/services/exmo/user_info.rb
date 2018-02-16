@@ -25,9 +25,12 @@ module BitcoinCourseMonitoring
         #  ассоциативный массив с данными аккаунта
         #
         def user_info
-          response = RestClient.post(url, payload, headers)
+          response =
+            RestClient.post(url, payload, headers) {|response, request, result| response }
           info = JSON.parse(response, symbolize_names: true)
           balances = info.slice(:balances, :reserved)
+          rescue SocketError => e
+            puts "In Socket error"
         end
       end
     end

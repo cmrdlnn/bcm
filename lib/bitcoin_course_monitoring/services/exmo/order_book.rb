@@ -27,8 +27,11 @@ module BitcoinCourseMonitoring
         #  информация об ордерах валютных пар
         #
         def order_book
-          response = RestClient.get(url, params: { limit: limit, pair: pair })
+          response =
+            RestClient.get(url, params: { limit: limit, pair: pair }) {|response, request, result| response }
           JSON.parse(response.body, symbolize_names: true)
+          rescue SocketError => e
+            puts "In Socket error"
         end
       end
     end

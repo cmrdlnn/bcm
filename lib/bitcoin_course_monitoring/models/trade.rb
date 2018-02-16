@@ -77,9 +77,13 @@ module BitcoinCourseMonitoring
 
       attr_reader :bought
 
+      def start_trade
+        Services::Exmo::Trade.new(self).start
+      end
+
       # Запускает поток в котором идет процесс торгов, создаються ордера на покупку и на продажу
       #
-      def start_trade
+      def start_trades
         min = $order_book[:ask_top].to_f
         max = $order_book[:bid_top].to_f
         Thread.new do

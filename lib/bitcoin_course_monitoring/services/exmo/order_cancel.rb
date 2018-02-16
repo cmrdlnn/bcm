@@ -25,8 +25,11 @@ module BitcoinCourseMonitoring
         #  ассоциативный массив с данными аккаунта
         #
         def order_cancel
-          response = RestClient.post(url, payload, headers)
+          response =
+            RestClient.post(url, payload, headers) {|response, request, result| response }
           JSON.parse(response, symbolize_names: true)
+          rescue SocketError => e
+            puts "In Socket error"
         end
       end
     end
