@@ -28,7 +28,7 @@ module BitcoinCourseMonitoring
               sleep 1
               begin
               response =
-                RestClient.get(url, params: { limit: 100, pair: 'BTC_USD' }) {|response, request, result| response }
+                RestClient.get(url, params: { limit: 10, pair: 'BTC_USD' }) {|response, request, result| response }
               order_book = JSON.parse(response.body, symbolize_names: true)
               $order_book = order_book unless order_book.key?(:error)
               rescue SocketError => e
