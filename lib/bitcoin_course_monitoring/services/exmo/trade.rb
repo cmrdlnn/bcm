@@ -71,7 +71,7 @@ module BitcoinCourseMonitoring
           quantity = order_price.to_f / price
           type = 'buy'
           create_data = create_order_data(price, quantity, type)
-          next if check_balance!(type)
+          return if check_balance!(type)
           order = Order.create(create_data)
           p "BUY! #{price}"
         end
@@ -84,7 +84,7 @@ module BitcoinCourseMonitoring
           quantity = balance[:BTC]
           type = 'sell'
           p create_data = create_order_data(price, quantity, type)
-          next if check_balance!(type)
+          return if check_balance!(type)
           order = Models::Order.create(create_data)
           p "SELL! #{price}"
         end
