@@ -8,6 +8,7 @@ import {
   CardHeader,
   Col,
   Row,
+  Table,
 } from 'reactstrap';
 
 import InfoRow from 'components/InfoRow';
@@ -16,34 +17,26 @@ import { clearTrade, fetchTrade } from 'modules/trades';
 
 class TradesPage extends Component {
   componentWillMount() {
-    this.updateComponent(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.updateComponent(nextProps);
-  }
-
-  updateComponent = (props) => {
-    const { match, trade, tradeClear, tradeFetch } = props;
+    const { match, tradeFetch } = this.props;
     const { id } = match.params;
+    tradeFetch(id);
+    this.fetcher = setInterval(() => tradeFetch(id), 10000);
+  }
 
-    if (!id || ['active', 'archive', 'create'].includes(id)) {
-      if (trade) tradeClear();
-      return;
-    }
-
-    if (!trade) tradeFetch(id);
+  componentWillUnmount() {
+    clearInterval(this.fetcher);
+    this.props.tradeClear();
   }
 
   render() {
     const { trade } = this.props;
-
+    console.log(this.props)
     if (!trade) return null;
 
     return (
       <div className="animated fadeIn">
         <Row>
-          <Col xs="6">
+          <Col xs="3">
             <Card>
               <CardHeader>
                 <i className="fa fa-balance-scale" />
@@ -64,14 +57,41 @@ class TradesPage extends Component {
               </CardBody>
             </Card>
           </Col>
-          <Col xs="6">
+          <Col xs="9">
             <Card>
               <CardHeader>
                 <i className="fa fa-tasks" />
-                Список действий
+                Список ордеров
               </CardHeader>
               <CardBody>
-              фывфыв
+                { trade[0].orders.length ? (
+                  <Table hover bordered striped responsive size="sm">
+                    <thead>
+                      <tr>
+                        <th>Дата/время</th>
+                        <th>Операция</th>
+                        <th>Цена</th>
+                        <th>Количество</th>
+                        <th>Сумма</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      { trade[0].orders.map(order => (
+                        <tr>
+                          <td>{ order.created_at.toLocaleString('ru') }</td>
+                          <td>{ order.type }</td>
+                          <td>{ order.price }</td>
+                          <td>{ order.quantity }</td>
+                          <td>{ order.quantity * order.price }</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                ) : (
+                  <h2 className="text-center">
+                    В данных торгах ещё не выставленно ни одного ордера
+                  </h2>
+                )}
               </CardBody>
             </Card>
           </Col>

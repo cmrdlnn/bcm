@@ -13,7 +13,7 @@ Sequel.migration do
       column :secret, :text, null: false
       column :start_course, :float, null: false, default: 0
       column :pair, :text, null: false
-      column :margin, :float, null: false
+      # column :margin, :float, null: false
       column :order_price, :float, null: false
       column :closed, :boolean, null: false, default: false
       column :created_at, :timestamp, index: true, null: false

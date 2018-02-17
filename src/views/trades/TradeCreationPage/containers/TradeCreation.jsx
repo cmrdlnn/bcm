@@ -21,7 +21,13 @@ import OrderList from '../components/OrderList';
 
 class TradeCreation extends Component {
   componentWillMount() {
-    this.props.fetchOrderBook();
+    const { fetchOrderBook } = this.props;
+    fetchOrderBook();
+    this.fetcher = setInterval(fetchOrderBook, 6000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.fetcher);
   }
 
   render() {
@@ -46,13 +52,15 @@ class TradeCreation extends Component {
               <Form onSubmit={data => tradeCreate(data)} buttonText="Создать">
                 <Field
                   addon={<i className="fa fa-dollar" />}
-                  helper="Цена в долларах за криптовалюту, по достижении которой система её купит"
+                  helper="Цена в долларах за криптовалюту, опустившись ниже которой система её купит"
+                  min={0}
                   name="start_course"
                   placeholder="Введите старт-курс"
                   required
                   title="Старт-курс"
                   type="number"
                 />
+                { /*
                 <Field
                   addon={<i className="fa fa-percent" />}
                   helper="Процент от падения/роста при котором система будет покупать/продавать криптовалюту"
@@ -63,9 +71,12 @@ class TradeCreation extends Component {
                   title="Маржа"
                   type="number"
                 />
+                */ }
                 <Field
                   addon={<i className="fa fa-dollar" />}
                   helper="Количество долларов на счету, которые войдут в оборот торгов"
+                  // max={balances && balances.USD}
+                  min={Math.ceil(0.001 * askTop)}
                   name="order_price"
                   placeholder="Введите оборот"
                   required
@@ -88,9 +99,17 @@ class TradeCreation extends Component {
                 <hr />
                 <InfoRow title="Баланс биткоинов на счету" value={balances && balances.USD} />
                 <hr />
-                <InfoRow helper="Долларов за bitcoin" title="Минимальная цена продажи" value={askTop} />
+                <InfoRow
+                  helper="Долларов за bitcoin среди текущих ордеров"
+                  title="Минимальная цена продажи"
+                  value={askTop}
+                />
                 <hr />
-                <InfoRow helper="Долларов за bitcoin" title="Максимальная цена покупки" value={bidTop} />
+                <InfoRow
+                  helper="Долларов за bitcoin среди текущих ордеров"
+                  title="Максимальная цена покупки"
+                  value={bidTop}
+                />
               </CardBody>
             </Card>
           </Row>

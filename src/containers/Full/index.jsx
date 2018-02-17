@@ -43,43 +43,42 @@ class Full extends Component {
           <main className="main">
             <Breadcrumb />
             <Container fluid>
-              <Switch>
-                <Route path="/settings" name="Settings" component={Settings} />
-                { this.props.role === 'administrator' ? (
-                  <Fragment>
-                    <Route path="/users/all" name="UsersPage" component={UsersPage} />
-                    <Route path="/users/create" name="NewUser" component={UserCreation} />
-                    <Redirect from="*" to="/users/all" />
-                  </Fragment>
-                ) : (
-                  <Fragment>
-                    <Route exact path="/dashboard" name="Dashboard" component={Dashboard} />
-                    <Route exact path="/trades/create" name="TradeCreationPage" component={TradeCreationPage} />
-                    <Route exact path="/trades/active" name="ActiveTrades" component={TradesPage} />
-                    <Route exact path="/trades/archive" name="ClosedTrades" component={TradesPage} />
-                    <Route path="/trades/:id" name="TradePage" component={TradePage} />
-                    { /*
-                    <Redirect from="*" to="/dashboard" />
-                    <Route path="/trades/id" name="TradePage" component={TradePage} />
-                    */ }
-                  </Fragment>
-                )}
-                { /*
-                <Route path="/dashboard" name="Dashboard" component={Dashboard} />
-                <Route path="/components/buttons" name="Buttons" component={Buttons} />
-                <Route path="/components/cards" name="Cards" component={Cards} />
-                <Route path="/components/forms" name="Forms" component={Forms} />
-                <Route path="/components/modals" name="Modals" component={Modals} />
-                <Route path="/components/social-buttons" name="Social Buttons" component={SocialButtons} />
-                <Route path="/components/switches" name="Swithces" component={Switches} />
-                <Route path="/components/tables" name="Tables" component={Tables} />
-                <Route path="/components/tabs" name="Tabs" component={Tabs} />
-                <Route path="/icons/font-awesome" name="Font Awesome" component={FontAwesome} />
-                <Route path="/icons/simple-line-icons" name="Simple Line Icons" component={SimpleLineIcons} />
-                <Route path="/widgets" name="Widgets" component={Widgets} />
-                <Route path="/charts" name="Charts" component={Charts} />
-                */ }
-              </Switch>
+              { this.props.role === 'administrator' ? (
+                <Switch>
+                  <Route path="/settings" name="Settings" component={Settings} />
+                  <Route path="/users/all" name="UsersPage" component={UsersPage} />
+                  <Route path="/users/create" name="NewUser" component={UserCreation} />
+                  <Redirect from="*" to="/users/all" />
+                </Switch>
+              ) : (
+                <Switch>
+                  <Route path="/settings" name="Settings" component={Settings} />
+                  <Route path="/dashboard" name="Dashboard" component={Dashboard} />
+                  <Route path="/trades/create" name="TradeCreationPage" component={TradeCreationPage} />
+                  <Route exact strict path="/trades/active" name="ActiveTrades" component={TradesPage} />
+                  <Route exact strict path="/trades/archive" name="ClosedTrades" component={TradesPage} />
+                  <Route path="/trades/:id" name="TradePage" component={TradePage} />
+                  <Redirect from="*" to="/dashboard" />
+                  { /*
+                  <Route path="/trades/id" name="TradePage" component={TradePage} />
+                  */ }
+                </Switch>
+              )}
+              { /*
+              <Route path="/dashboard" name="Dashboard" component={Dashboard} />
+              <Route path="/components/buttons" name="Buttons" component={Buttons} />
+              <Route path="/components/cards" name="Cards" component={Cards} />
+              <Route path="/components/forms" name="Forms" component={Forms} />
+              <Route path="/components/modals" name="Modals" component={Modals} />
+              <Route path="/components/social-buttons" name="Social Buttons" component={SocialButtons} />
+              <Route path="/components/switches" name="Swithces" component={Switches} />
+              <Route path="/components/tables" name="Tables" component={Tables} />
+              <Route path="/components/tabs" name="Tabs" component={Tabs} />
+              <Route path="/icons/font-awesome" name="Font Awesome" component={FontAwesome} />
+              <Route path="/icons/simple-line-icons" name="Simple Line Icons" component={SimpleLineIcons} />
+              <Route path="/widgets" name="Widgets" component={Widgets} />
+              <Route path="/charts" name="Charts" component={Charts} />
+              */ }
             </Container>
           </main>
           { /* <Aside /> */ }

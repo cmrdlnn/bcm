@@ -11,33 +11,44 @@ import {
 import { indexTrades } from 'modules/trades';
 
 class TradesPage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { closed: this.props.location.pathname.includes('archive') };
+  componentWillMount() {
+    const { tradesIndex, location } = this.props;
+    this.getTrades(location, tradesIndex);
   }
 
-  componentWillMount() {
-    this.props.indexTrades({ closed: this.state.closed });
+  componentWillReceiveProps(nextProps) {
+    const { tradesIndex, location } = nextProps;
+    if (location.pathname !== this.props.location.pathname) {
+      this.getTrades(location, tradesIndex);
+    }
+  }
+
+  getTrades = (location, tradesIndex) => {
+    let isClosed = false;
+    if (location.pathname.includes('archive')) {
+      isClosed = true;
+    }
+    tradesIndex({ closed: isClosed });
   }
 
   render() {
-    const { history, trades } = this.props;
-    const { closed } = this.state;
-    console.log(this.props)
+    const { history, location, trades } = this.props;
+    const isClosed = location.pathname.includes('archive');
+
     return (
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
             <i className="fa fa-tasks" />
-            { closed ? 'Закрытые торги' : 'Активные торги' }
+            { isClosed ? 'Закрытые торги' : 'Активные торги' }
           </CardHeader>
           <CardBody>
             { trades.length ? (
               <Table hover bordered striped responsive size="sm">
                 <thead>
                   <tr>
+                    <th>#</th>
                     <th>Старт-курс</th>
-                    <th>Маржа</th>
                     <th>Объём торгов</th>
                     <th>Дата и время создания</th>
                   </tr>
@@ -50,8 +61,8 @@ class TradesPage extends Component {
                         onClick={() => history.push(`/trades/${trade.id}`)}
                         style={{ cursor: 'pointer' }}
                       >
+                        <th scope="row">{ i + 1 }</th>
                         <td>{ trade.start_course }</td>
-                        <td>{ trade.margin }</td>
                         <td>{ trade.order_price }</td>
                         <td>{ new Date(trade.created_at).toLocaleString('ru') }</td>
                       </tr>
@@ -61,7 +72,7 @@ class TradesPage extends Component {
               </Table>
           ) : (
             <h2 className="text-center">
-              В системе нет { closed ? 'закрытых' : 'активных' } торгов
+              В системе нет { isClosed ? 'закрытых' : 'активных' } торгов
             </h2>
           )}
           </CardBody>
@@ -74,7 +85,7 @@ class TradesPage extends Component {
 const mapStateToProps = ({ trades: { all } }) => ({ trades: all });
 
 const mapDispatchToProps = dispatch => ({
-  indexTrades: bindActionCreators(indexTrades, dispatch),
+  tradesIndex: bindActionCreators(indexTrades, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TradesPage);

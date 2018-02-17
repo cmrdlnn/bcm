@@ -60,7 +60,7 @@ module BitcoinCourseMonitoring
       def trades
         BitcoinCourseMonitoring::Models::Trade
           .where(user_id: user_id, closed: closed)
-          .select(:id, :start_course, :margin, :order_price, :created_at)
+          .select(:id, :start_course, :order_price, :created_at)
           .naked.all
       end
     end

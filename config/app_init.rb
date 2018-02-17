@@ -32,6 +32,7 @@ $app_name = 'bitcoin_course_monitoring'
 $lib = "#{$root}/lib/#{$app_name}"
 $pair = {}
 $order_book = {}
+$trend = { ask_slope: nil, bid_slope: nil }
 
 # Загрузка инициализации составных частей приложения
 Dir["#{__dir__}/initializers/*.rb"].sort.each(&method(:require))

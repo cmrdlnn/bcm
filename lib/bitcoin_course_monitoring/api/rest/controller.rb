@@ -25,6 +25,11 @@ module BitcoinCourseMonitoring
       class Controller < Sinatra::Base
         helpers Helpers
 
+        def self.run!
+          Services::Exmo::AutoOrderBook.new.order_book
+          super
+        end
+
         # Аутентифицирует учётную запись
         #
         # @param [Hash] params

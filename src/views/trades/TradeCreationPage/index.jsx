@@ -16,18 +16,15 @@ class TradeCreationPage extends Component {
     this.state = { step: 0 };
   }
 
-  componentWillMount() {
-    console.log(this.props)
-
-  }
-
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
-    if (nextProps.balances) this.setState({ step: this.state.step + 1 });
+    const step = this.props.balances === nextProps.balances ? 0 : 1;
+    this.setState({ step });
   }
 
   render() {
     const Step = steps[this.state.step];
+
+    if (!Step) return null;
 
     return (
       <div className="animated fadeIn">

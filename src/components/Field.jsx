@@ -18,6 +18,7 @@ const Field = ({
   required,
   title,
   type,
+  ...inputProps
 }) => (
   <FormGroup>
     { title ? <Label for={name}>{ title }</Label> : null }
@@ -35,6 +36,7 @@ const Field = ({
         placeholder={placeholder}
         required={required}
         type={type}
+        {...inputProps}
       />
     </InputGroup>
     { helper ? <FormText>{ helper }</FormText> : null }

@@ -30,7 +30,7 @@ class UserActions extends Component {
           <i className="icon-settings" />
         </DropdownToggle>
         <DropdownMenu className={isOpen ? 'show' : ''} right>
-          <DropdownItem>Изменить e-mail</DropdownItem>
+          { /* <DropdownItem>Изменить e-mail</DropdownItem> */ }
           <DropdownItem onClick={() => deleteUser(id)}>Удалить</DropdownItem>
         </DropdownMenu>
       </ButtonDropdown>

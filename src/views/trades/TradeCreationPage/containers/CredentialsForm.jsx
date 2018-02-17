@@ -14,7 +14,7 @@ import { fetchInfo } from 'modules/user';
 import Form from 'components/Form';
 import Field from 'components/Field';
 
-const CredentialsForm = ({ infoFetch, onNextStep }) => (
+const CredentialsForm = ({ infoFetch }) => (
   <Col xs="12">
     <Card>
       <CardHeader>
@@ -24,10 +24,7 @@ const CredentialsForm = ({ infoFetch, onNextStep }) => (
       <CardBody>
         <Form
           buttonText="Далее"
-          onSubmit={(formData) => {
-            infoFetch(formData);
-            onNextStep();
-          }}
+          onSubmit={(formData) => infoFetch(formData)}
         >
           <Field
             addon={<i className="icon-key" />}
@@ -49,10 +46,7 @@ const CredentialsForm = ({ infoFetch, onNextStep }) => (
   </Col>
 );
 
-CredentialsForm.propTypes = {
-  infoFetch: PropTypes.func.isRequired,
-  onNextStep: PropTypes.func.isRequired,
-};
+CredentialsForm.propTypes = { infoFetch: PropTypes.func.isRequired };
 
 const mapDispatchToProps = dispatch => ({ infoFetch: bindActionCreators(fetchInfo, dispatch) });
 
