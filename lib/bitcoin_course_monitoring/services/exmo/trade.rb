@@ -108,7 +108,8 @@ module BitcoinCourseMonitoring
           p "profit: #{profit(bid)}"
           price = bid - 0.00000001
           @start_course = price
-          quantity = balance[:BTC]
+          quantity =
+            Models::Order.where(trade_id: trade_id).order(:created_at).last.amount
           type = 'sell'
           p create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
