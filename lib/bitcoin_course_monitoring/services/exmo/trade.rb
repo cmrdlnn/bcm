@@ -97,7 +97,7 @@ module BitcoinCourseMonitoring
         def buy(ask)
           price = ask + 0.00000001
           @start_course = price
-          quantity = order_price.to_f / price
+          quantity = (order_price.to_f / price).ceil(8)
           type = 'buy'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
