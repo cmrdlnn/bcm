@@ -19,11 +19,14 @@ module BitcoinCourseMonitoring
           @min = $order_book[:ask_top].to_f
           @max = $order_book[:bid_top].to_f
           @start_course = trade.start_course
+          @stage = 1
         end
 
         attr_reader :order_price, :start_course, :trade_id, :pair, :key, :secret
 
-        attr_reader :bought
+        attr_reader :order_id
+
+        attr_reader :stage
 
         def start
           Thread.new do
@@ -45,17 +48,22 @@ module BitcoinCourseMonitoring
           loop do
             if trend_is_filled?
               break if Models::Trade.with_pk(trade_id).closed
-              bid = $order_book[:bid_top].to_f
-              ask = $order_book[:ask_top].to_f
-              if bought
-                p "bid: #{bid}"
-                p "Прибыль: #{profit(bid)}"
-                profit = profit(bid)
-                sell(bid) if profit.positive? && negative_bid_slope?
-              else
+              case stage
+              when 1
+                ask = $order_book[:ask_top].to_f
                 p "ask: #{ask}"
                 p "Падение цены: #{start_course - ask}"
                 buy(ask) if positive_ask_slope?
+              when 2
+                check_buy_order
+              when 3
+                bid = $order_book[:bid_top].to_f
+                profit = profit(bid)
+                p "bid: #{bid}"
+                p "Прибыль: #{profit}"
+                sell(bid) if profit.positive? && negative_bid_slope?
+              when 4
+                check_sell_order
               end
             end
             sleep 1
@@ -64,29 +72,49 @@ module BitcoinCourseMonitoring
 
         private
 
+        def check_buy_order
+          order = Models::Order.with_pk(order_id)
+          if order.amount.zero? && order.created_at - Time.now > 180
+            order.cancel_order
+            @stage = 1
+          elsif order.amount >= order.quantity
+            @stage = 3
+          end
+        end
+
+        def check_sell_order
+          order = Models::Order.with_pk(order_id)
+          if order.amount.zero? && order.created_at - Time.now > 180
+            order.cancel_order
+            @stage = 3
+          elsif order.amount >= order.quantity
+            @stage = 1
+          end
+        end
+
         def buy(ask)
-          @bought = true
           price = ask + 0.00000001
           @start_course = price
           quantity = order_price.to_f / price
           type = 'buy'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
-          order = Order.create(create_data)
+          @order = Models::Order.create(create_data).id
           p "BUY! #{price}"
+          @stage = 2
         end
 
         def sell(bid)
-          p "profit: #{profit}"
-          @bought = false
-          @start_course = nil
+          p "profit: #{profit(bid)}"
           price = bid - 0.00000001
+          @start_course = price
           quantity = balance[:BTC]
           type = 'sell'
           p create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
-          order = Models::Order.create(create_data)
+          @order = Models::Order.create(create_data).id
           p "SELL! #{price}"
+          @stage = 4
         end
 
         def profit(bid)
