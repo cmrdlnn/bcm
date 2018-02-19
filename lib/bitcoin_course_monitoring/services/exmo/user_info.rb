@@ -26,11 +26,12 @@ module BitcoinCourseMonitoring
         #
         def user_info
           response =
-            RestClient.post(url, payload, headers) {|response, request, result| response }
+            RestClient.post(url, payload, headers) { |resp, _request, _result| resp }
+          p "user_info: #{response}"
           info = JSON.parse(response, symbolize_names: true)
-          balances = info.slice(:balances, :reserved)
-          rescue SocketError => e
-            puts "In Socket error"
+          info.slice(:balances, :reserved, :error)
+        rescue SocketError
+          p 'In Socket error'
         end
       end
     end

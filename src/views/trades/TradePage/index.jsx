@@ -54,7 +54,7 @@ class TradesPage extends Component {
                 <hr />
                 <InfoRow title="Текущий баланс в долларах" value={balanceUSD.replace(/(.*\..{2})(.+)/, '$1')} />
                 <hr />
-                <InfoRow title="Текущий баланс в биткоинах" value={balanceBTC.replace(/(.*\..{2})(.+)/, '$1')} />
+                <InfoRow title="Текущий баланс в биткоинах" value={balanceBTC.replace(/(.*\..{5})(.+)/, '$1')} />
                 <hr />
                 <InfoRow title="Долларов зарезервировано в ордерах" value={reservedUSD.replace(/(.*\..{2})(.+)/, '$1')} />
                 <hr />
@@ -83,7 +83,7 @@ class TradesPage extends Component {
                     <tbody>
                       { trade[0].orders.map(order => (
                         <tr>
-                          <td>{ order.created_at.toLocaleString('ru') }</td>
+                          <td>{ new Date(order.created_at).toLocaleString('ru') }</td>
                           <td>{ order.type }</td>
                           <td>{ order.price }</td>
                           <td>{ order.quantity }</td>

@@ -9,7 +9,7 @@ module BitcoinCourseMonitoring
       #
       # Класс отменяющий ордер на покупку или продажу
       #
-      class OrderCreate < BaseAuthenticated
+      class OrderCancel < BaseAuthenticated
         # Инициализирует клас объекта
         #
         def initialize(key, secret, params)

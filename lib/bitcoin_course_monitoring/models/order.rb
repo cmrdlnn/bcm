@@ -69,7 +69,7 @@ module BitcoinCourseMonitoring
       def order_create
         order = Services::Exmo::OrderCreate.new(key, secret, create_order_data).order_create
         if order[:error].empty?
-          update(order_id: order[:order_id])
+          update(order_id: order[:order_id].to_i)
           tracking_order
         else
           update(state: 'error')
@@ -88,8 +88,8 @@ module BitcoinCourseMonitoring
             trades = order_info[:trades]
             next if trades.nil?
             next if trades.blank?
-            sum = trades.reduce(0) do |memo, trade|
-              memo + trade[:quantity]
+            sum = trades.reduce(0.0) do |memo, trade|
+              memo + trade[:quantity].to_f
             end
             update(amount: sum)
             update(state: 'fulfilled') if sum == quantity

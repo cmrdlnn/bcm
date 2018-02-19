@@ -12,7 +12,9 @@ module BitcoinCourseMonitoring
 
         def initialize(trade)
           @key = trade.key
+          p key
           @secret = trade.secret
+          p secret
           @trade_id = trade.id
           @pair = trade.pair
           @order_price = trade.order_price
@@ -172,18 +174,19 @@ module BitcoinCourseMonitoring
         #  результат проверки
         #
         def check_balance!(type)
-          return false if balance.key?(:error)
+          info = user_info
+          return false if info.nil? || info.key?(:error)
           case type
           when 'buy'
-            balance[:balances][:USD].to_f <= order_price
+            info[:balances][:USD].to_f <= order_price
           when 'sell'
-            balance[:balances][:BTC].to_f == 0
+            info[:balances][:BTC].to_f.zero?
           end
         end
 
         # Возвращает баланс аккаунта
         #
-        def balance
+        def user_info
           Services::Exmo::UserInfo.new(key, secret).user_info
         end
       end

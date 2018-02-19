@@ -26,10 +26,11 @@ module BitcoinCourseMonitoring
         #
         def order_create
           response =
-            RestClient.post(url, payload, headers) {|response, request, result| response }
+            RestClient.post(url, payload, headers) { |resp, _request, _result| resp }
+          p "response: #{response}"
           JSON.parse(response, symbolize_names: true)
-          rescue SocketError => e
-            puts "In Socket error"
+        rescue SocketError
+          p 'In Socket error'
         end
       end
     end
