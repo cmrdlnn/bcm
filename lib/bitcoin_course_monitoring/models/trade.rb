@@ -73,8 +73,6 @@ module BitcoinCourseMonitoring
         start_trade
       end
 
-      COMMISSION = 1.002
-
       attr_reader :bought
 
       def start_trade

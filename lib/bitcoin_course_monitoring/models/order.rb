@@ -83,9 +83,10 @@ module BitcoinCourseMonitoring
       def tracking_order
         Thread.new do
           loop do
-            sleep 3600
+            sleep 3
             order_info = Services::Exmo::OrderTrades.new(key, secret, params).order_trades
             trades = order_info[:trades]
+            next if trades.nil?
             next if trades.blank?
             sum = trades.reduce(0) do |memo, trade|
               memo + trade[:quantity]
@@ -99,9 +100,15 @@ module BitcoinCourseMonitoring
 
       # Отменяет ордер
       #
-      def canсel_order
-        Services::Exmo::OrderCancel.new(key, secret, params).order_cancel
-        update(state: 'canceled')
+      def cancel_order
+        Thread.new do
+          loop do
+            sleep 3
+            result = Services::Exmo::OrderCancel.new(key, secret, params).order_cancel
+            update(state: 'canceled') if result[:resilt] == true
+            brake if result[:resilt] == true
+          end
+        end
       end
 
       # Подготавливает параметры для запроса
