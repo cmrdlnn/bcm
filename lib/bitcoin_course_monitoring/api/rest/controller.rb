@@ -27,6 +27,7 @@ module BitcoinCourseMonitoring
 
         def self.run!
           Services::Exmo::AutoOrderBook.new.order_book
+          Thread.abort_on_exception = true
           super
         end
 

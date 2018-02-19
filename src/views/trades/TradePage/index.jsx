@@ -30,13 +30,18 @@ class TradesPage extends Component {
 
   render() {
     const { trade } = this.props;
-    console.log(this.props)
+
     if (!trade) return null;
+
+    const balanceUSD = (trade[1].balances && trade[1].balances.USD) || '0';
+    const balanceBTC = (trade[1].balances && trade[1].balances.BTC) || '0';
+    const reservedUSD = (trade[1].reserved && trade[1].reserved.USD) || '0';
+    const reservedBTC = (trade[1].reserved && trade[1].reserved.BTC) || '0';
 
     return (
       <div className="animated fadeIn">
         <Row>
-          <Col xs="3">
+          <Col xs="4">
             <Card>
               <CardHeader>
                 <i className="fa fa-balance-scale" />
@@ -47,17 +52,17 @@ class TradesPage extends Component {
                 <hr />
                 <InfoRow title="Выставленный объём торгов" value={trade[0].order_price} />
                 <hr />
-                <InfoRow title="Текущий баланс в долларах" value={trade[1].balances.USD} />
+                <InfoRow title="Текущий баланс в долларах" value={balanceUSD.replace(/(.*\..{2})(.+)/, '$1')} />
                 <hr />
-                <InfoRow title="Текущий баланс в биткоинах" value={trade[1].balances.BTC} />
+                <InfoRow title="Текущий баланс в биткоинах" value={balanceBTC.replace(/(.*\..{2})(.+)/, '$1')} />
                 <hr />
-                <InfoRow title="Долларов зарезервировано в ордерах" value={trade[1].reserved.USD} />
+                <InfoRow title="Долларов зарезервировано в ордерах" value={reservedUSD.replace(/(.*\..{2})(.+)/, '$1')} />
                 <hr />
-                <InfoRow title="Биткоинов зарезервировано в ордерах" value={trade[1].reserved.BTC} />
+                <InfoRow title="Биткоинов зарезервировано в ордерах" value={reservedBTC.replace(/(.*\..{2})(.+)/, '$1')} />
               </CardBody>
             </Card>
           </Col>
-          <Col xs="9">
+          <Col xs="8">
             <Card>
               <CardHeader>
                 <i className="fa fa-tasks" />

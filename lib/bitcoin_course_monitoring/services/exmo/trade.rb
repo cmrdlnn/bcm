@@ -77,7 +77,7 @@ module BitcoinCourseMonitoring
           if order.amount.zero? && order.created_at - Time.now > 180
             order.cancel_order
             @stage = 1
-          elsif order.amount >= order.quantity
+          elsif order.amount > 0
             @stage = 3
           end
         end
@@ -87,7 +87,7 @@ module BitcoinCourseMonitoring
           if order.amount.zero? && order.created_at - Time.now > 180
             order.cancel_order
             @stage = 3
-          elsif order.amount >= order.quantity
+          elsif order.amount > 0
             @stage = 1
           end
         end
@@ -99,7 +99,10 @@ module BitcoinCourseMonitoring
           type = 'buy'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
-          @order = Models::Order.create(create_data).id
+          p "create_data: #{create_data}"
+          order = Models::Order.create(create_data)
+          p "order: #{order}"
+          @order_id = order.id
           p "BUY! #{price}"
           @stage = 2
         end
@@ -109,11 +112,14 @@ module BitcoinCourseMonitoring
           price = bid - 0.00000001
           @start_course = price
           quantity =
-            Models::Order.where(trade_id: trade_id).order(:created_at).last.amount
+            Models::Order.where(trade_id: trade_id, type: 'buy').order(:created_at).last.amount
           type = 'sell'
-          p create_data = create_order_data(price, quantity, type)
+          create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
-          @order = Models::Order.create(create_data).id
+          p "create_data: #{create_data}"
+          order = Models::Order.create(create_data)
+          p "order: #{order}"
+          @order_id = order.id
           p "SELL! #{price}"
           @stage = 4
         end

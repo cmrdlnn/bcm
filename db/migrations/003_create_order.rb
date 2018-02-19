@@ -15,7 +15,7 @@ Sequel.migration do
       column :type, :order_type, index: true, null: false
       column :pair, :text, null: false
       column :quantity, :float, null: false
-      column :amount, :float
+      column :amount, :float, default: 0
       column :price, :float, null: false
       column :order_id, :integer, index: true, null: false, default: 0
       column :state, :state_type, index: true, null: false, default: 'processing'

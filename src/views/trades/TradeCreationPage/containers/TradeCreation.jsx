@@ -95,9 +95,9 @@ class TradeCreation extends Component {
                 Последние цены
               </CardHeader>
               <CardBody>
-                <InfoRow title="Баланс долларов на счету" value={balances && balances.BTC} />
+                <InfoRow title="Баланс долларов на счету" value={balances && balances.USD} />
                 <hr />
-                <InfoRow title="Баланс биткоинов на счету" value={balances && balances.USD} />
+                <InfoRow title="Баланс биткоинов на счету" value={balances && balances.BTC} />
                 <hr />
                 <InfoRow
                   helper="Долларов за bitcoin среди текущих ордеров"
