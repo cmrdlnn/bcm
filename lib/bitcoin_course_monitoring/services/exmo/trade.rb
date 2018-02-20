@@ -78,10 +78,11 @@ module BitcoinCourseMonitoring
           order = Models::Order.with_pk(order_id)
           if order.state == 'error'
             @stage = 1
-          elsif order.amount.zero? && order.created_at - Time.now > 180
+          elsif order.amount.zero? && Time.now - order.created_at > 180
             order.cancel_order
             @stage = 1
-          elsif order.amount > 0
+          elsif order.amount.positive?
+            @start_course = order.price
             @stage = 3
           end
         end
@@ -90,17 +91,17 @@ module BitcoinCourseMonitoring
           order = Models::Order.with_pk(order_id)
           if order.state == 'error'
             @stage = 3
-          elsif order.amount.zero? && order.created_at - Time.now > 180
+          elsif order.amount.zero? && Time.now - order.created_at > 180
             order.cancel_order
             @stage = 3
-          elsif order.amount > 0
+          elsif order.amount.positive?
+            @start_course = order.price
             @stage = 1
           end
         end
 
         def buy(ask)
           price = ask + 0.00000001
-          @start_course = price
           quantity = (order_price.to_f / price).ceil(8)
           type = 'buy'
           create_data = create_order_data(price, quantity, type)
@@ -116,7 +117,6 @@ module BitcoinCourseMonitoring
         def sell(bid)
           p "profit: #{profit(bid)}"
           price = bid - 0.00000001
-          @start_course = price
           quantity =
             Models::Order.where(trade_id: trade_id, type: 'buy').order(:created_at).last.amount
           type = 'sell'

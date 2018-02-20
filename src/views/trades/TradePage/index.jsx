@@ -35,16 +35,16 @@ class TradesPage extends Component {
   convertStatus = (status) => {
     switch(status) {
       case 'processing':
-        return 'В обработке';
+        return { text: 'В обработке', style: { color: '#007bff' } };
 
       case 'fulfilled':
-        return 'Исполнен';
+        return { text: 'Исполнен', style: { color: '#28a745' } };
 
       case 'canceled':
-        return 'Отменён';
+        return { text: 'Отменён', style: { color: '#ffc107' } };
 
       case 'error':
-        return 'Ошибка';
+        return { text: 'Ошибка', style: { color: '#dc3545' } };
     }
   }
 
@@ -106,6 +106,7 @@ class TradesPage extends Component {
                       const quantity = this.upToEighthDecimalPlace(order.quantity);
                       const price = this.upToEighthDecimalPlace(order.price);
                       const sum = this.upToEighthDecimalPlace(order.quantity * order.price);
+                      const status = this.convertStatus(order.state)
                       return (
                         <tr>
                           <td>{ new Date(order.created_at).toLocaleString('ru') }</td>
@@ -117,7 +118,7 @@ class TradesPage extends Component {
                           <td>{ price }</td>
                           <td>{ quantity }</td>
                           <td>{ sum }</td>
-                          <td>{ this.convertStatus(order.state) }</td>
+                          <td style={status.style}>{ status.text }</td>
                         </tr>
                       );
                     })}
