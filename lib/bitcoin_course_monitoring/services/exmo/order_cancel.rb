@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative "base/base_authenticated"
+require_relative 'base/base_authenticated'
 
 module BitcoinCourseMonitoring
   module Services
@@ -26,10 +26,10 @@ module BitcoinCourseMonitoring
         #
         def order_cancel
           response =
-            RestClient.post(url, payload, headers) {|response, request, result| response }
+            RestClient.post(url, payload, headers) { |resp, _request, _result| resp }
           JSON.parse(response, symbolize_names: true)
-          rescue SocketError => e
-            puts "In Socket error"
+        rescue SocketError, RestClient::Exceptions::ReadTimeout, Net::ReadTimeout
+          p 'In Socket error'
         end
       end
     end

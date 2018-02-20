@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative "base/base_authenticated"
+require_relative 'base/base_authenticated'
 
 module BitcoinCourseMonitoring
   module Services
@@ -30,7 +30,7 @@ module BitcoinCourseMonitoring
           p "user_info: #{response}"
           info = JSON.parse(response, symbolize_names: true)
           info.slice(:balances, :reserved, :error)
-        rescue SocketError
+        rescue SocketError, RestClient::Exceptions::ReadTimeout, Net::ReadTimeout
           p 'In Socket error'
         end
       end

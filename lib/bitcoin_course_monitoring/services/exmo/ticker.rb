@@ -31,11 +31,11 @@ module BitcoinCourseMonitoring
         #
         def ticker
           response =
-            RestClient.get(url) {|response, request, result| response }
+            RestClient.get(url) { |resp, _request, _result| resp }
           pairs = JSON.parse(response.body, symbolize_names: true)
           pairs[:BTC_USD]
-          rescue SocketError => e
-            puts "In Socket error"
+        rescue SocketError, RestClient::Exceptions::ReadTimeout, Net::ReadTimeout
+          p 'In Socket error'
         end
       end
     end

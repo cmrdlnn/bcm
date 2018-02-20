@@ -93,7 +93,7 @@ module BitcoinCourseMonitoring
             end
             update(amount: sum)
             update(state: 'fulfilled') if sum == quantity
-            brake if state == 'canceled' || state == 'fulfilled'
+            break if state == 'canceled' || state == 'fulfilled'
           end
         end
       end
@@ -106,7 +106,7 @@ module BitcoinCourseMonitoring
             sleep 3
             result = Services::Exmo::OrderCancel.new(key, secret, params).order_cancel
             update(state: 'canceled') if result[:resilt] == true
-            brake if result[:resilt] == true
+            break if result[:resilt] == true
           end
         end
       end

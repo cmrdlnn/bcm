@@ -28,6 +28,26 @@ class TradesPage extends Component {
     this.props.tradeClear();
   }
 
+  upToEighthDecimalPlace = value => (
+    Math.round(value * 100000000) / 100000000
+  )
+
+  convertStatus = (status) => {
+    switch(status) {
+      case 'processing':
+        return 'В обработке';
+
+      case 'fulfilled':
+        return 'Исполнен';
+
+      case 'canceled':
+        return 'Отменён';
+
+      case 'error':
+        return 'Ошибка';
+    }
+  }
+
   render() {
     const { trade } = this.props;
 
@@ -40,66 +60,76 @@ class TradesPage extends Component {
 
     return (
       <div className="animated fadeIn">
+        <Row className="mb-4">
+          <Card>
+            <CardHeader>
+              <i className="fa fa-balance-scale" />
+              Информация по торгам
+            </CardHeader>
+            <CardBody>
+              <InfoRow title="Выставленный старт-курс" value={trade[0].start_course} />
+              <hr />
+              <InfoRow title="Выставленный объём торгов" value={trade[0].order_price} />
+              <hr />
+              <InfoRow title="Текущий баланс в долларах" value={balanceUSD} />
+              <hr />
+              <InfoRow title="Текущий баланс в биткоинах" value={balanceBTC} />
+              <hr />
+              <InfoRow title="Долларов зарезервировано в ордерах" value={reservedUSD} />
+              <hr />
+              <InfoRow title="Биткоинов зарезервировано в ордерах" value={reservedBTC} />
+            </CardBody>
+          </Card>
+        </Row>
         <Row>
-          <Col xs="4">
-            <Card>
-              <CardHeader>
-                <i className="fa fa-balance-scale" />
-                Информация по торгам
-              </CardHeader>
-              <CardBody>
-                <InfoRow title="Выставленный старт-курс" value={trade[0].start_course} />
-                <hr />
-                <InfoRow title="Выставленный объём торгов" value={trade[0].order_price} />
-                <hr />
-                <InfoRow title="Текущий баланс в долларах" value={balanceUSD.replace(/(.*\..{2})(.+)/, '$1')} />
-                <hr />
-                <InfoRow title="Текущий баланс в биткоинах" value={balanceBTC.replace(/(.*\..{5})(.+)/, '$1')} />
-                <hr />
-                <InfoRow title="Долларов зарезервировано в ордерах" value={reservedUSD.replace(/(.*\..{2})(.+)/, '$1')} />
-                <hr />
-                <InfoRow title="Биткоинов зарезервировано в ордерах" value={reservedBTC.replace(/(.*\..{2})(.+)/, '$1')} />
-              </CardBody>
-            </Card>
-          </Col>
-          <Col xs="8">
-            <Card>
-              <CardHeader>
-                <i className="fa fa-tasks" />
-                Список ордеров
-              </CardHeader>
-              <CardBody>
-                { trade[0].orders.length ? (
-                  <Table hover bordered striped responsive size="sm">
-                    <thead>
-                      <tr>
-                        <th>Дата/время</th>
-                        <th>Операция</th>
-                        <th>Цена</th>
-                        <th>Количество</th>
-                        <th>Сумма</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      { trade[0].orders.map(order => (
+          <Card>
+            <CardHeader>
+              <i className="fa fa-tasks" />
+              Список ордеров
+            </CardHeader>
+            <CardBody>
+              { trade[0].orders.length ? (
+                <Table hover bordered striped responsive size="sm">
+                  <thead>
+                    <tr>
+                      <th>Дата/время</th>
+                      <th>Операция</th>
+                      <th>Цена</th>
+                      <th>Количество</th>
+                      <th>Сумма</th>
+                      <th>Статус</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    { trade[0].orders.map((order) => {
+                      const isBuy = order.type === 'buy';
+                      const quantity = this.upToEighthDecimalPlace(order.quantity);
+                      const price = this.upToEighthDecimalPlace(order.price);
+                      const sum = this.upToEighthDecimalPlace(order.quantity * order.price);
+                      return (
                         <tr>
                           <td>{ new Date(order.created_at).toLocaleString('ru') }</td>
-                          <td>{ order.type }</td>
-                          <td>{ order.price }</td>
-                          <td>{ order.quantity }</td>
-                          <td>{ order.quantity * order.price }</td>
+                          <td
+                            style={{ color: isBuy ? '#347ffb' : '#ff0026' }}
+                          >
+                            { isBuy ? 'Покупка' : 'Продажа' }
+                          </td>
+                          <td>{ price }</td>
+                          <td>{ quantity }</td>
+                          <td>{ sum }</td>
+                          <td>{ this.convertStatus(order.state) }</td>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                ) : (
-                  <h2 className="text-center">
-                    В данных торгах ещё не выставленно ни одного ордера
-                  </h2>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              ) : (
+                <h2 className="text-center">
+                  В данных торгах ещё не выставленно ни одного ордера
+                </h2>
+              )}
+            </CardBody>
+          </Card>
         </Row>
       </div>
     );

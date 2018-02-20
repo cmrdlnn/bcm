@@ -28,10 +28,10 @@ module BitcoinCourseMonitoring
         #
         def order_book
           response =
-            RestClient.get(url, params: { limit: limit, pair: pair }) {|response, request, result| response }
+            RestClient.get(url, params: { limit: limit, pair: pair }) { |resp, _request, _result| resp }
           JSON.parse(response.body, symbolize_names: true)
-          rescue SocketError => e
-            puts "In Socket error"
+        rescue SocketError, RestClient::Exceptions::ReadTimeout, Net::ReadTimeout
+          p 'In Socket error'
         end
       end
     end

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative "base/base_authenticated"
+require_relative 'base/base_authenticated'
 
 module BitcoinCourseMonitoring
   module Services
@@ -29,7 +29,7 @@ module BitcoinCourseMonitoring
             RestClient.post(url, payload, headers) { |resp, _request, _result| resp }
           p "response: #{response}"
           JSON.parse(response, symbolize_names: true)
-        rescue SocketError
+        rescue SocketError, RestClient::Exceptions::ReadTimeout, Net::ReadTimeout
           p 'In Socket error'
         end
       end

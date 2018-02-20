@@ -17,8 +17,6 @@ class Widget04 extends Component {
       this.setState({ valuesStyle: { color: '#28a745' } });
     } else if (value > nextProps.value) {
       this.setState({ valuesStyle: { color: '#d50000' } });
-    } else {
-      this.setState({ valuesStyle: {} });
     }
   }
 
