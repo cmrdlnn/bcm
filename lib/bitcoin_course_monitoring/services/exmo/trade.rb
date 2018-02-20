@@ -76,7 +76,9 @@ module BitcoinCourseMonitoring
 
         def check_buy_order
           order = Models::Order.with_pk(order_id)
-          if order.amount.zero? && order.created_at - Time.now > 180
+          if order.state == 'error'
+            @stage = 1
+          elsif order.amount.zero? && order.created_at - Time.now > 180
             order.cancel_order
             @stage = 1
           elsif order.amount > 0
@@ -86,7 +88,9 @@ module BitcoinCourseMonitoring
 
         def check_sell_order
           order = Models::Order.with_pk(order_id)
-          if order.amount.zero? && order.created_at - Time.now > 180
+          if order.state == 'error'
+            @stage = 3
+          elsif order.amount.zero? && order.created_at - Time.now > 180
             order.cancel_order
             @stage = 3
           elsif order.amount > 0
