@@ -31,7 +31,7 @@ module BitcoinCourseMonitoring
               p $trend
               begin
                 response =
-                  RestClient.get(url, params: { limit: 10, pair: 'BTC_USD' }) { |resp, _request, _result| resp }
+                  RestClient.get(url, params: { limit: 1, pair: 'BTC_USD' }) { |resp, _request, _result| resp }
                 order_book = JSON.parse(response.body, symbolize_names: true)
                 unless order_book.key?(:error)
                   pair_orders = order_book[:BTC_USD]
@@ -47,8 +47,10 @@ module BitcoinCourseMonitoring
                     $trend[:bid_slope] = slope(price_trend[:bid])
                   end
                 end
-              rescue SocketError
-                puts 'In Socket error'
+              rescue => e
+                error = "#{e.class}: #{e.message}:\n  #{e.backtrace.first}"
+                $logger.error { error }
+                { error: error }
               end
             end
           end

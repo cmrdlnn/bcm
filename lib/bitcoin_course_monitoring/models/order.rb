@@ -76,6 +76,21 @@ module BitcoinCourseMonitoring
         end
       end
 
+      # Отменяет ордер
+      #
+      def cancel_order
+        Thread.new do
+          loop do
+            sleep 3
+            result = Services::Exmo::OrderCancel.new(key, secret, params).order_cancel
+            if result[:result] == true
+              update(state: 'canceled')
+              break
+            end
+          end
+        end
+      end
+
       private
 
       # Отслеживает ордер, меняет его состояние в зависимости от полученных данных
@@ -92,21 +107,8 @@ module BitcoinCourseMonitoring
               memo + trade[:quantity].to_f
             end
             update(amount: sum)
-            update(state: 'fulfilled') if sum == quantity
+            update(state: 'fulfilled') if sum >= quantity
             break if state == 'canceled' || state == 'fulfilled'
-          end
-        end
-      end
-
-      # Отменяет ордер
-      #
-      def cancel_order
-        Thread.new do
-          loop do
-            sleep 3
-            result = Services::Exmo::OrderCancel.new(key, secret, params).order_cancel
-            update(state: 'canceled') if result[:resilt] == true
-            break if result[:resilt] == true
           end
         end
       end

@@ -28,8 +28,10 @@ module BitcoinCourseMonitoring
           response =
             RestClient.post(url, payload, headers) { |resp, _request, _result| resp }
           JSON.parse(response, symbolize_names: true)
-        rescue SocketError, RestClient::Exceptions::ReadTimeout, Net::ReadTimeout
-          p 'In Socket error'
+        rescue => e
+          error = "#{e.class}: #{e.message}:\n  #{e.backtrace.first}"
+          $logger.error { error }
+          { error: error }
         end
       end
     end

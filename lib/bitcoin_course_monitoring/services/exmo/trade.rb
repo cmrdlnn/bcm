@@ -102,7 +102,7 @@ module BitcoinCourseMonitoring
 
         def buy(ask)
           price = ask + 0.00000001
-          quantity = (order_price.to_f / price).ceil(8)
+          quantity = (order_price.to_f / price).floor(8)
           type = 'buy'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
@@ -119,7 +119,7 @@ module BitcoinCourseMonitoring
           price = bid - 0.00000001
           amount =
             Models::Order.where(trade_id: trade_id, type: 'buy').order(:created_at).last.amount
-          quantity = (amount * 0.998).ceil(8)
+          quantity = (amount * 0.998).floor(8)
           type = 'sell'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
@@ -141,12 +141,12 @@ module BitcoinCourseMonitoring
 
         def positive_ask_slope?
           ask_slope = $trend[:ask_slope]
-          ask_slope && ask_slope.positive?
+          ask_slope&.positive?
         end
 
         def negative_bid_slope?
           bid_slope = $trend[:bid_slope]
-          bid_slope && bid_slope.negative?
+          bid_slope&.negative?
         end
 
         # Подготавливает данные для создания ордера

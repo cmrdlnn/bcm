@@ -27,11 +27,16 @@ module BitcoinCourseMonitoring
         #  информация об ордерах валютных пар
         #
         def order_book
-          response =
-            RestClient.get(url, params: { limit: limit, pair: pair }) { |resp, _request, _result| resp }
+          response = RestClient.get(url, params) { |resp, _request, _result| resp }
           JSON.parse(response.body, symbolize_names: true)
-        rescue SocketError, RestClient::Exceptions::ReadTimeout, Net::ReadTimeout
-          p 'In Socket error'
+        rescue => e
+          error = "#{e.class}: #{e.message}:\n  #{e.backtrace.first}"
+          $logger.error { error }
+          { error: error }
+        end
+
+        def params
+          { params: { limit: limit, pair: pair } }
         end
       end
     end
