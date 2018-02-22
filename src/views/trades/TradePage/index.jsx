@@ -41,7 +41,7 @@ class TradesPage extends Component {
         return { text: 'Исполнен', style: { color: '#28a745' } };
 
       case 'canceled':
-        return { text: 'Отменён', style: { color: '#ffc107' } };
+        return { text: 'Отменён', style: { color: '#ff7b00' } };
 
       case 'error':
         return { text: 'Ошибка', style: { color: '#dc3545' } };
@@ -101,7 +101,7 @@ class TradesPage extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    { trade[0].orders.map((order) => {
+                    { trade[0].orders.sort((a, b) => new Date(a.created_at) > new Date(b.created_at)).map((order) => {
                       const isBuy = order.type === 'buy';
                       const quantity = this.upToEighthDecimalPlace(order.quantity);
                       const price = this.upToEighthDecimalPlace(order.price);
