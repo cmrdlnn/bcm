@@ -8,16 +8,19 @@ module BitcoinCourseMonitoring
       # Класс возвращающий информацию по открытым ордерам
       #
       class AutoOrderBook
-        TREND_SIZE = 30
+        PRICE_TREND_SIZE = 30
+
+        SLOPE_TREND_SIZE = 3
 
         # Инициализирует клас объекта
         #
         def initialize
           @url = 'https://api.exmo.com/v1/order_book/'
           @price_trend = { ask: [], bid: [] }
+          @slope_trend = { ask: [], bid: [] }
         end
 
-        attr_reader :url, :price_trend
+        attr_reader :url, :price_trend, :slope_trend
 
         # Запускает поток с get запросом на апи биржи
         # и получает данные по открытым ордерам каждую секунду
@@ -29,6 +32,7 @@ module BitcoinCourseMonitoring
             loop do
               sleep 1
               p $trend
+              p slope_trend
               begin
                 response =
                   RestClient.get(url, params: { limit: 1, pair: 'BTC_USD' }) { |resp, _request, _result| resp }
@@ -38,13 +42,15 @@ module BitcoinCourseMonitoring
                   $order_book = pair_orders
                   ask_top = pair_orders[:ask_top].to_f
                   bid_top = pair_orders[:bid_top].to_f
-                  update_ask_trend(ask_top)
-                  update_bid_trend(bid_top)
-                  if bid_trend_is_full?
-                    $trend[:ask_slope] = slope(price_trend[:ask])
+                  update_ask_price_trend(ask_top)
+                  update_bid_price_trend(bid_top)
+                  if ask_price_trend_is_full?
+                    update_ask_slope_trend(slope(price_trend[:ask]))
+                    $trend[:ask_slope] = positive_ask_slope_trend?
                   end
-                  if ask_trend_is_full?
-                    $trend[:bid_slope] = slope(price_trend[:bid])
+                  if bid_price_trend_is_full?
+                    update_bid_slope_trend(slope(price_trend[:bid]))
+                    $trend[:bid_slope] = negative_bid_slope_trend?
                   end
                 end
               rescue => e
@@ -58,24 +64,52 @@ module BitcoinCourseMonitoring
 
         private
 
-        def update_ask_trend(ask)
+        def positive_ask_slope_trend?
+          ask_slope_trend_is_full? && slope_trend[:ask].all?(&:positive?)
+        end
+
+        def negative_bid_slope_trend?
+          bid_slope_trend_is_full? && slope_trend[:bid].all?(&:negative?)
+        end
+
+        def update_ask_slope_trend(ask_slope)
+          return if slope_trend[:ask].last == ask_slope
+          slope_trend[:ask].shift if ask_slope_trend_is_full?
+          slope_trend[:ask].push(ask_slope)
+        end
+
+        def update_bid_slope_trend(bid_slope)
+          return if slope_trend[:bid].last == bid_slope
+          slope_trend[:bid].shift if bid_slope_trend_is_full?
+          slope_trend[:bid].push(bid_slope)
+        end
+
+        def ask_slope_trend_is_full?
+          slope_trend[:ask].size >= SLOPE_TREND_SIZE
+        end
+
+        def bid_slope_trend_is_full?
+          slope_trend[:bid].size >= SLOPE_TREND_SIZE
+        end
+
+        def update_ask_price_trend(ask)
           return if price_trend[:ask].last == ask
-          price_trend[:ask].shift if ask_trend_is_full?
+          price_trend[:ask].shift if ask_price_trend_is_full?
           price_trend[:ask].push(ask)
         end
 
-        def update_bid_trend(bid)
+        def update_bid_price_trend(bid)
           return if price_trend[:bid].last == bid
-          price_trend[:bid].shift if bid_trend_is_full?
+          price_trend[:bid].shift if bid_price_trend_is_full?
           price_trend[:bid].push(bid)
         end
 
-        def bid_trend_is_full?
-          price_trend[:bid].size >= TREND_SIZE
+        def ask_price_trend_is_full?
+          price_trend[:ask].size >= PRICE_TREND_SIZE
         end
 
-        def ask_trend_is_full?
-          price_trend[:ask].size >= TREND_SIZE
+        def bid_price_trend_is_full?
+          price_trend[:bid].size >= PRICE_TREND_SIZE
         end
 
         def slope(trend)

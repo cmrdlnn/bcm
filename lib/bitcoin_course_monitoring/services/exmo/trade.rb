@@ -36,7 +36,7 @@ module BitcoinCourseMonitoring
               ask = $order_book[:ask_top].to_f
               p "ask: #{ask}"
               p "start_course: #{start_course}"
-              if ask <= start_course && positive_ask_slope?
+              if ask <= start_course && $trend[:ask_slope] == true
                 buy(ask)
                 launch_trade
                 break
@@ -48,25 +48,24 @@ module BitcoinCourseMonitoring
 
         def launch_trade
           loop do
-            if trend_is_filled?
-              break if Models::Trade.with_pk(trade_id).closed
-              case stage
-              when 1
-                ask = $order_book[:ask_top].to_f
-                p "ask: #{ask}"
-                p "Падение цены: #{start_course - ask}"
-                buy(ask) if positive_ask_slope?
-              when 2
-                check_buy_order
-              when 3
-                bid = $order_book[:bid_top].to_f
-                profit = profit(bid)
-                p "bid: #{bid}"
-                p "Прибыль: #{profit}"
-                sell(bid) if profit.positive? && negative_bid_slope?
-              when 4
-                check_sell_order
-              end
+            trade = Models::Trade.with_pk(trade_id)
+            break if trade&.closed
+            case stage
+            when 1
+              ask = $order_book[:ask_top].to_f
+              p "ask: #{ask}"
+              p "Падение цены: #{start_course - ask}"
+              buy(ask) if $trend[:ask_slope] == true
+            when 2
+              check_buy_order
+            when 3
+              bid = $order_book[:bid_top].to_f
+              profit = profit(bid)
+              p "bid: #{bid}"
+              p "Прибыль: #{profit}"
+              sell(bid) if profit.positive? && $trend[:bid_slope] == true
+            when 4
+              check_sell_order
             end
             sleep 1
           end
@@ -133,20 +132,6 @@ module BitcoinCourseMonitoring
 
         def profit(bid)
           bid - start_course.to_f / (1 - COMMISSION) - bid * COMMISSION
-        end
-
-        def trend_is_filled?
-          !$trend.values.all?(&:nil?)
-        end
-
-        def positive_ask_slope?
-          ask_slope = $trend[:ask_slope]
-          ask_slope&.positive?
-        end
-
-        def negative_bid_slope?
-          bid_slope = $trend[:bid_slope]
-          bid_slope&.negative?
         end
 
         # Подготавливает данные для создания ордера
