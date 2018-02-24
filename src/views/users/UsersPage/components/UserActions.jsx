@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
 import {
   ButtonDropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
 } from 'reactstrap';
-
-import { deleteUser } from 'modules/administration';
 
 class UserActions extends Component {
   constructor(props) {
@@ -22,7 +19,7 @@ class UserActions extends Component {
 
   render() {
     const { isOpen } = this.state;
-    const { id, deleteUser, updateEmail } = this.props;
+    const { id, login, onDeleteUser } = this.props;
 
     return (
       <ButtonDropdown isOpen={isOpen} toggle={this.toggle}>
@@ -30,14 +27,17 @@ class UserActions extends Component {
           <i className="icon-settings" />
         </DropdownToggle>
         <DropdownMenu className={isOpen ? 'show' : ''} right>
-          { /* <DropdownItem>Изменить e-mail</DropdownItem> */ }
-          <DropdownItem onClick={() => deleteUser(id)}>Удалить</DropdownItem>
+          <DropdownItem onClick={() => onDeleteUser(id, login)}>Удалить</DropdownItem>
         </DropdownMenu>
       </ButtonDropdown>
     );
   }
 }
 
-const mapDispatchToProps = dispatch => ({ deleteUser: bindActionCreators(deleteUser, dispatch) });
+UserActions.propTypes = {
+  id: PropTypes.number.isRequired,
+  login: PropTypes.string.isRequired,
+  onDeleteUser: PropTypes.func.isRequired,
+};
 
-export default connect(null, mapDispatchToProps)(UserActions);
+export default UserActions;
