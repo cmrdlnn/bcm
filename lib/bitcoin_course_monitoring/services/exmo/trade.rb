@@ -33,6 +33,7 @@ module BitcoinCourseMonitoring
         def start
           Thread.new do
             loop do
+              break if trade_closed?
               ask = $order_book[:ask_top].to_f
               p "ask: #{ask}"
               p "start_course: #{start_course}"
@@ -48,8 +49,7 @@ module BitcoinCourseMonitoring
 
         def launch_trade
           loop do
-            trade = Models::Trade.with_pk(trade_id)
-            break if trade&.closed
+            break if trade_closed?
             case stage
             when 1
               ask = $order_book[:ask_top].to_f
@@ -72,6 +72,11 @@ module BitcoinCourseMonitoring
         end
 
         private
+
+        def trade_closed?
+          trade = Models::Trade.with_pk(trade_id)
+          trade&.closed
+        end
 
         def check_buy_order
           order = Models::Order.with_pk(order_id)
