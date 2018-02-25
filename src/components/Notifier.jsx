@@ -23,8 +23,8 @@ Notifier.propTypes = {
       id: PropTypes.number.isRequired,
       type: PropTypes.string.isRequired,
       message: PropTypes.string.isRequired,
-    })
-  ).isRequired
+    }),
+  ).isRequired,
 };
 
 const mapStateToProps = ({ alerts }) => ({ alerts });
