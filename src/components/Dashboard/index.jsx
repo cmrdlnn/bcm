@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { fetchTicker } from 'modules/statistic';
 
-import Widget04 from './components/Widget04';
+import TickerCard from './components/TickerCard';
 
 class Widgets extends Component {
   componentWillMount() {
@@ -33,22 +33,22 @@ class Widgets extends Component {
       <div className="animated fadeIn">
         <Row>
           <Col sm="6" md="2">
-            <Widget04 icon="icon-people" color="info" header="87.500" value={high}>максимальная цена сделки за 24 часа</Widget04>
+            <TickerCard icon="icon-people" color="info" header="87.500" value={high}>максимальная цена сделки за 24 часа</TickerCard>
           </Col>
           <Col sm="6" md="2">
-            <Widget04 icon="icon-user-follow" color="success" header="385" value={low}>минимальная цена сделки за 24 часа</Widget04>
+            <TickerCard icon="icon-user-follow" color="success" header="385" value={low}>минимальная цена сделки за 24 часа</TickerCard>
           </Col>
           <Col sm="6" md="2">
-            <Widget04 icon="icon-basket-loaded" color="warning" header="1238" value={avg}>средняя цена сделки за 24 часа</Widget04>
+            <TickerCard icon="icon-basket-loaded" color="warning" header="1238" value={avg}>средняя цена сделки за 24 часа</TickerCard>
           </Col>
           <Col sm="6" md="2">
-            <Widget04 icon="icon-pie-chart" color="primary" header="28%" value={last_trade}>цена последней сделки</Widget04>
+            <TickerCard icon="icon-pie-chart" color="primary" header="28%" value={last_trade}>цена последней сделки</TickerCard>
           </Col>
           <Col sm="6" md="2">
-            <Widget04 icon="icon-speedometer" color="danger" header="5:34:11" value={buy_price}>текущая максимальная цена покупки</Widget04>
+            <TickerCard icon="icon-speedometer" color="danger" header="5:34:11" value={buy_price}>текущая максимальная цена покупки</TickerCard>
           </Col>
           <Col sm="6" md="2">
-            <Widget04 icon="icon-speech" color="info" header="972" value={sell_price}>текущая минимальная цена продажи</Widget04>
+            <TickerCard icon="icon-speech" color="info" header="972" value={sell_price}>текущая минимальная цена продажи</TickerCard>
           </Col>
         </Row>
       </div>

@@ -29,7 +29,7 @@ module BitcoinCourseMonitoring
       def initialize(id, params, token)
         super(token)
         @id = id
-        @params = params
+        @params = params.except(:id)
       end
 
       # Идентификатор записи торгов, параметры

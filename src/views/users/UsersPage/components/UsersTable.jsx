@@ -9,7 +9,7 @@ import {
 
 import UserActions from './UserActions';
 
-const UsersTable = ({ users }) => (
+const UsersTable = ({ onDeleteUser, users }) => (
   <Fragment>
     <Table hover bordered striped size="sm">
       <thead>
@@ -27,7 +27,7 @@ const UsersTable = ({ users }) => (
               <td>{ user.login }</td>
               <td>{ new Date(user.created_at).toLocaleString('ru') }</td>
               <td>Трейдер</td>
-              <td><UserActions id={user.id} /></td>
+              <td><UserActions id={user.id} login={user.login} onDeleteUser={onDeleteUser} /></td>
             </tr>
           ))
         }
@@ -53,6 +53,7 @@ const UsersTable = ({ users }) => (
 UsersTable.defaultProps = { users: [] };
 
 UsersTable.propTypes = {
+  onDeleteUser: PropTypes.func.isRequired,
   users: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,

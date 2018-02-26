@@ -10,7 +10,7 @@ class Form extends Component {
       if (element.name) result[element.name] = element.value;
       return result;
     }, {});
-    form.reset()
+    form.reset();
     this.props.onSubmit(json);
   }
 

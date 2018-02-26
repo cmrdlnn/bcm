@@ -1,21 +1,31 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
-  Col,
   Row,
   Table,
 } from 'reactstrap';
 
+import ConfirmModal from 'components/ConfirmModal';
 import InfoRow from 'components/InfoRow';
 
-import { clearTrade, fetchTrade } from 'modules/trades';
+import { clearTrade, fetchTrade, updateTrade } from 'modules/trades';
+
+const onCloseTradeMessage = 'После того, как вы остановите торги - все текущие ордера ' +
+  'отменятся, а купленная в рамках торгов криптовалюта (если таковая имеется) останется на ' +
+  'ващем балансе';
 
 class TradesPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { modalIsOpen: false };
+  }
+
   componentWillMount() {
     const { match, tradeFetch } = this.props;
     const { id } = match.params;
@@ -28,9 +38,7 @@ class TradesPage extends Component {
     this.props.tradeClear();
   }
 
-  upToEighthDecimalPlace = value => (
-    Math.round(value * 100000000) / 100000000
-  )
+  upToEighthDecimalPlace = value => Math.round(value * 100000000) / 100000000
 
   convertStatus = (status) => {
     switch(status) {
@@ -49,7 +57,7 @@ class TradesPage extends Component {
   }
 
   render() {
-    const { trade } = this.props;
+    const { trade, tradeUpdate } = this.props;
 
     if (!trade) return null;
 
@@ -60,6 +68,16 @@ class TradesPage extends Component {
 
     return (
       <div className="animated fadeIn">
+        <ConfirmModal
+          body={onCloseTradeMessage}
+          header="Вы действительно хотите закрыть торги?"
+          isOpen={this.state.modalIsOpen}
+          onConfirm={() => {
+            this.setState({ modalIsOpen: false });
+            tradeUpdate(trade[0].id, { closed: true }, 'Торги успешно закрыты');
+          }}
+          onReject={() => this.setState({ modalIsOpen: false })}
+        />
         <Row className="mb-4">
           <Card>
             <CardHeader>
@@ -78,6 +96,19 @@ class TradesPage extends Component {
               <InfoRow title="Долларов зарезервировано в ордерах" value={reservedUSD} />
               <hr />
               <InfoRow title="Биткоинов зарезервировано в ордерах" value={reservedBTC} />
+              { trade[0].closed ? null : (
+                <Fragment>
+                  <hr />
+                  <Button
+                    block
+                    color="primary"
+                    onClick={() => this.setState({ modalIsOpen: true })}
+                    outline
+                  >
+                    Закрыть торги
+                  </Button>
+                </Fragment>
+              )}
             </CardBody>
           </Card>
         </Row>
@@ -106,7 +137,7 @@ class TradesPage extends Component {
                       const quantity = this.upToEighthDecimalPlace(order.quantity);
                       const price = this.upToEighthDecimalPlace(order.price);
                       const sum = this.upToEighthDecimalPlace(order.quantity * order.price);
-                      const status = this.convertStatus(order.state)
+                      const status = this.convertStatus(order.state);
                       return (
                         <tr>
                           <td>{ new Date(order.created_at).toLocaleString('ru') }</td>
@@ -142,6 +173,7 @@ const mapStateToProps = ({ trades: { current } }) => ({ trade: current });
 const mapDispatchToProps = dispatch => ({
   tradeFetch: bindActionCreators(fetchTrade, dispatch),
   tradeClear: bindActionCreators(clearTrade, dispatch),
+  tradeUpdate: bindActionCreators(updateTrade, dispatch),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TradesPage));
