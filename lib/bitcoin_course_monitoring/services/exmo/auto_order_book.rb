@@ -10,7 +10,7 @@ module BitcoinCourseMonitoring
       class AutoOrderBook
         PRICE_TREND_SIZE = 30
 
-        SLOPE_TREND_SIZE = 3
+        SLOPE_TREND_SIZE = 7
 
         # Инициализирует клас объекта
         #
