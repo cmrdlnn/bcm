@@ -69,7 +69,7 @@ module BitcoinCourseMonitoring
       #  ордера
       #
       def trade_orders
-        orders = trade.orders_dataset.naked.all
+        orders = trade.orders_dataset.naked.order(:created_at).all
         { orders: orders }
       end
 
