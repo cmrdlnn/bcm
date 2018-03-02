@@ -7,11 +7,9 @@ import {
   Table,
 } from 'reactstrap';
 
-import UserActions from './UserActions';
-
 const UsersTable = ({ onDeleteUser, users }) => (
   <Fragment>
-    <Table hover bordered striped size="sm">
+    <Table hover bordered responsive striped size="sm">
       <thead>
         <tr>
           <th>Электронная почта</th>
@@ -27,7 +25,15 @@ const UsersTable = ({ onDeleteUser, users }) => (
               <td>{ user.login }</td>
               <td>{ new Date(user.created_at).toLocaleString('ru') }</td>
               <td>Трейдер</td>
-              <td><UserActions id={user.id} login={user.login} onDeleteUser={onDeleteUser} /></td>
+              <td>
+                <a
+                  href="#"
+                  onClick={() => onDeleteUser(user.id, user.login)}
+                  role="button"
+                >
+                  Удалить
+                </a>
+              </td>
             </tr>
           ))
         }

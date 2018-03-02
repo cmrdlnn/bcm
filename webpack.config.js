@@ -5,27 +5,27 @@ module.exports = {
   output: {
     path: path.join(__dirname, './public/'),
     filename: 'webpack.bundle.js',
-    publicPath: '/'
+    publicPath: '/',
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: 'babel-loader'
+        use: 'babel-loader',
       },
       {
         test: /\.(css|scss)$/,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(svg|png|jpg|jpeg|gif|ico|eot|woff|woff2|ttf)$/,
-        use: ['file-loader']
-      }
-    ]
+        use: ['file-loader'],
+      },
+    ],
   },
   resolve: {
     extensions: ['.js', '.jsx'],
-    modules: [path.resolve(__dirname, './src'), 'node_modules']
-  }
+    modules: [path.resolve(__dirname, './src'), 'node_modules'],
+  },
 };

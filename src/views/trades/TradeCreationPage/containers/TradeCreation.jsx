@@ -16,8 +16,8 @@ import { createTrade } from 'modules/trades';
 import Field from 'components/Field';
 import Form from 'components/Form';
 import InfoRow from 'components/InfoRow';
+import OrderList from 'components/OrderList';
 
-import OrderList from '../components/OrderList';
 
 class TradeCreation extends Component {
   componentWillMount() {
