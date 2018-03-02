@@ -16,7 +16,9 @@ module BitcoinCourseMonitoring
       class << self
         FROM = 'support@bcm.com'.freeze
 
-        SERVER = 'localhost'.freeze
+        SERVER = ENV['BCM_SMTP_SERVER']
+
+        PORT = ENV['BCM_SMTP_PORT']
 
         CAPTION = 'С уважением, команда BitcoinTrader.'.freeze
 
@@ -85,7 +87,7 @@ module BitcoinCourseMonitoring
         end
 
         def send_mail(message, to)
-          Net::SMTP.start(SERVER) do |smtp|
+          Net::SMTP.start(SERVER, PORT) do |smtp|
             smtp.send_message message, FROM, to
           end
         end
