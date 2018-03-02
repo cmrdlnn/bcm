@@ -100,6 +100,7 @@ module BitcoinCourseMonitoring
           loop do
             sleep 3
             order_info = Services::Exmo::OrderTrades.new(key, secret, params).order_trades
+            next if order_info.key?(:error)
             trades = order_info[:trades]
             next if trades.nil?
             next if trades.blank?
