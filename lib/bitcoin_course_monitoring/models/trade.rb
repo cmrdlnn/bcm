@@ -76,7 +76,7 @@ module BitcoinCourseMonitoring
       attr_reader :bought
 
       def start_trade
-        Services::Exmo::Trade.new(self).start
+        Services::Exmo::Trade.new(self, self.start_course).start
       end
     end
   end

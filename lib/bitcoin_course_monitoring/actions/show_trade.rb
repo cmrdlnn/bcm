@@ -79,7 +79,8 @@ module BitcoinCourseMonitoring
       #  запись торгов
       #
       def trade
-        @trade ||= BitcoinCourseMonitoring::Models::Trade.with_pk!(id)
+        @trade ||= BitcoinCourseMonitoring::Models::Trade
+                   .where(user_id: user_id, id: id).first!
       end
 
       # Возвращает баланс аккаунта пользователя
