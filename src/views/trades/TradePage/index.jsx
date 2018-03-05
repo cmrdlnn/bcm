@@ -132,27 +132,30 @@ class TradesPage extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    { trade[0].orders.sort((a, b) => new Date(a.created_at) >= new Date(b.created_at)).map((order) => {
-                      const isBuy = order.type === 'buy';
-                      const quantity = this.upToEighthDecimalPlace(order.quantity);
-                      const price = this.upToEighthDecimalPlace(order.price);
-                      const sum = this.upToEighthDecimalPlace(order.quantity * order.price);
-                      const status = this.convertStatus(order.state);
-                      return (
-                        <tr>
-                          <td>{ new Date(order.created_at).toLocaleString('ru') }</td>
-                          <td
-                            style={{ color: isBuy ? '#347ffb' : '#ff0026' }}
-                          >
-                            { isBuy ? 'Покупка' : 'Продажа' }
-                          </td>
-                          <td>{ price }</td>
-                          <td>{ quantity }</td>
-                          <td>{ sum }</td>
-                          <td style={status.style}>{ status.text }</td>
-                        </tr>
-                      );
-                    })}
+                    { trade[0].orders
+                        .sort((a, b) => (new Date(a.created_at) >= new Date(b.created_at) ? 1 : -1))
+                        .map((order) => {
+                          const isBuy = order.type === 'buy';
+                          const quantity = this.upToEighthDecimalPlace(order.quantity);
+                          const price = this.upToEighthDecimalPlace(order.price);
+                          const sum = this.upToEighthDecimalPlace(order.quantity * order.price);
+                          const status = this.convertStatus(order.state);
+                          return (
+                            <tr>
+                              <td>{ new Date(order.created_at).toLocaleString('ru') }</td>
+                              <td
+                                style={{ color: isBuy ? '#347ffb' : '#ff0026' }}
+                              >
+                                { isBuy ? 'Покупка' : 'Продажа' }
+                              </td>
+                              <td>{ price }</td>
+                              <td>{ quantity }</td>
+                              <td>{ sum }</td>
+                              <td style={status.style}>{ status.text }</td>
+                            </tr>
+                          );
+                        })
+                    }
                   </tbody>
                 </Table>
               ) : (

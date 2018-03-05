@@ -10,7 +10,7 @@ module BitcoinCourseMonitoring
       class Trade
         COMMISSION = 0.002
 
-        def initialize(trade)
+        def initialize(trade, course, stage = 1)
           @key = trade.key
           p key
           @secret = trade.secret
@@ -20,8 +20,8 @@ module BitcoinCourseMonitoring
           @order_price = trade.order_price
           @min = $order_book[:ask_top].to_f
           @max = $order_book[:bid_top].to_f
-          @start_course = trade.start_course
-          @stage = 1
+          @start_course = course
+          @stage = stage
         end
 
         attr_reader :order_price, :start_course, :trade_id, :pair, :key, :secret

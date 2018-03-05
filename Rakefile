@@ -41,22 +41,3 @@ namespace :bitcoin_course_monitoring do
     BitcoinCourseMonitoring::Tasks::CreateAdmin.launch!
   end
 end
-
-namespace :rufus do
-  require 'rufus-scheduler'
-  require_relative 'config/app_init'
-
-  desc 'Отменяте ордера если прошло более 12 часов с момента их публикации'
-
-  task :cancel_order do
-    scheduler = Rufus::Scheduler.new
-    scheduler.every '3h' do
-      orders = BitcoinCourseMonitoring::Models::Order.where(state: 'processing').all
-      orders.each do |order|
-        order.cancel_order if Time.now > order.created_at + 60 * 60 * 12
-      end
-    end
-
-    scheduler.join
-  end
-end

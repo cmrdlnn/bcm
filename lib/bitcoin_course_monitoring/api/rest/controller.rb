@@ -4,6 +4,7 @@ require 'json'
 require 'sinatra/base'
 
 require_relative 'helpers'
+require_relative '../../tasks/resumption_trading'
 
 Dir["#{$lib}/actions/*.rb"].each(&method(:require))
 
@@ -27,6 +28,7 @@ module BitcoinCourseMonitoring
 
         def self.run!
           Services::Exmo::AutoOrderBook.new.order_book
+          Tasks::ResumptionTrading.launch!
           Thread.abort_on_exception = true
           super
         end
