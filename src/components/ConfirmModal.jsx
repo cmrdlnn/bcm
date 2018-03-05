@@ -25,18 +25,21 @@ const ConfirmModal = ({
 ConfirmModal.defaultProps = {
   body: null,
   confirmText: 'Да',
+  header: '',
+  onConfirm: null,
   rejectText: 'Отмена',
+  toggle: null,
 };
 
 ConfirmModal.propTypes = {
   body: PropTypes.string,
   confirmText: PropTypes.string,
-  header: PropTypes.string.isRequired,
+  header: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
-  onConfirm: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func,
   onReject: PropTypes.func.isRequired,
   rejectText: PropTypes.string,
-  toggle: PropTypes.func.isRequired,
+  toggle: PropTypes.func,
 };
 
 export default ConfirmModal;

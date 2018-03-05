@@ -6,3 +6,4 @@ cm/provisioning/roles
 # FrontEnd
 node_modules
 public/*
+npm-debug.log

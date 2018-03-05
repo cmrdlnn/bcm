@@ -7,7 +7,9 @@ import { USER_CREATE } from '../constants';
 
 export default function (data) {
   return (dispatch) => {
-    JSONRequest('/api/users', data)
+    const credentials = { login: data.login.trim().toLowerCase() }
+
+    JSONRequest('/api/users', credentials)
       .then(response => response.json())
       .then((payload) => {
         dispatch({

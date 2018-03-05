@@ -6,7 +6,9 @@ import { SIGN_IN } from '../constants';
 
 export default function (data) {
   return (dispatch) => {
-    JSONRequest('/api/auth', data)
+    const credentials = { ...data, login: data.login.trim().toLowerCase() }
+
+    JSONRequest('/api/auth', credentials)
       .then(response => response.json())
       .then((payload) => {
         dispatch({

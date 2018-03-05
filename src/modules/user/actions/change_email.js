@@ -5,8 +5,9 @@ import { showAlert } from 'modules/alerts';
 export default function (data) {
   return (dispatch, getState) => {
     const { id } = getState().user;
+    const credentials = { ...data, new_email: data.new_email.trim().toLowerCase() }
 
-    JSONRequest('/api/users/change_email', { id, ...data }, 'PATCH')
+    JSONRequest('/api/users/change_email', { id, ...credentials }, 'PATCH')
       .then(() => {
         dispatch(
           showAlert(
