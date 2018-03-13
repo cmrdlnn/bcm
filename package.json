@@ -2,7 +2,7 @@
   "name": "bitcoin_course_monitoring",
   "version": "0.0.1",
   "description": "",
-  "main": "frontend/index.jsx",
+  "main": "src/index.jsx",
   "scripts": {
     "dev": "webpack -d --bail --config webpack.dev.js",
     "prod": "webpack -p --bail",
@@ -47,7 +47,7 @@
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.9",
-    "reactstrap": "^5.0.0-beta",
+    "reactstrap": "^5.0.0-beta.2",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",

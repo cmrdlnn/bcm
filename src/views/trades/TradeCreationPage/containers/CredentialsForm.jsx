@@ -24,7 +24,7 @@ const CredentialsForm = ({ infoFetch }) => (
       <CardBody>
         <Form
           buttonText="Далее"
-          onSubmit={(formData) => infoFetch(formData)}
+          onSubmit={formData => infoFetch(formData)}
         >
           <Field
             addon={<i className="icon-key" />}

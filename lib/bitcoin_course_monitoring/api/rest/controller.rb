@@ -27,7 +27,6 @@ module BitcoinCourseMonitoring
         helpers Helpers
 
         def self.run!
-          Services::Exmo::AutoOrderBook.new.order_book
           Tasks::ResumptionTrading.launch!
           Thread.abort_on_exception = true
           super
@@ -110,7 +109,7 @@ module BitcoinCourseMonitoring
         end
 
         patch '/api/users/change_email' do
-          address = request.env['HTTP_HOST']
+          address = request.env['HTTP_ORIGIN']
           new_token =
             Actions::ChangeEmail.new(params, token, address).change_email
           headers 'X-CSRF-Token' => new_token
@@ -250,6 +249,16 @@ module BitcoinCourseMonitoring
         #
         get '/api/course' do
           content = Services::Exmo::Ticker.new.ticker
+          body content.to_json
+        end
+
+        # Возвращает настройки всех возможных валютных пар
+        #
+        # @return [Status]
+        #  200
+        #
+        get '/api/pair_settings' do
+          content = Services::Exmo::PairSettings.pair_settings
           body content.to_json
         end
 

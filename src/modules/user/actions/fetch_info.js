@@ -2,7 +2,7 @@ import { JSONRequest } from 'api';
 
 import { showAlert } from 'modules/alerts';
 
-import { FETCH_INFO } from '../constants';
+import { UPDATE_USER } from '../constants';
 
 export default function (data) {
   return (dispatch) => {
@@ -11,7 +11,7 @@ export default function (data) {
       .then((payload) => {
         if (payload.balances) {
           dispatch({
-            type: FETCH_INFO,
+            type: UPDATE_USER,
             payload: { ...payload, ...data },
           });
         } else {

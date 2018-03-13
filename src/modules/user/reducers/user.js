@@ -1,8 +1,8 @@
 import {
   AUTH_CHECK,
-  FETCH_INFO,
   LOGOUT,
   SIGN_IN,
+  UPDATE_USER,
 } from '../constants';
 
 export default function reducer(state = { fetching: true }, { type, payload }) {
@@ -10,14 +10,14 @@ export default function reducer(state = { fetching: true }, { type, payload }) {
     case AUTH_CHECK:
       return payload || {};
 
-    case FETCH_INFO:
-      return { ...state, ...payload };
-
     case LOGOUT:
       return {};
 
     case SIGN_IN:
       return payload;
+
+    case UPDATE_USER:
+      return { ...state, ...payload };
 
     default:
       return state;

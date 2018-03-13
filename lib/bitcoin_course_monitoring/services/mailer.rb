@@ -62,7 +62,7 @@ module BitcoinCourseMonitoring
           send_mail(msg, email)
         end
 
-        private_class_method
+        private
 
         def msg_to_old_email(email)
           <<-EOF

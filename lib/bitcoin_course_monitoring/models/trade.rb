@@ -70,13 +70,16 @@ module BitcoinCourseMonitoring
       #
       def after_create
         super
+        pairs = Services::Exmo::AutoOrderBook.pairs
+        trade_pair = pair.to_sym
+        pairs.push(trade_pair) unless pairs.include?(trade_pair)
         start_trade
       end
 
       attr_reader :bought
 
       def start_trade
-        Services::Exmo::Trade.new(self, self.start_course).start
+        Services::Exmo::Trade.new(self, start_course).start
       end
     end
   end

@@ -8,19 +8,24 @@ module BitcoinCourseMonitoring
       # Класс возвращающий информацию по открытым ордерам
       #
       class AutoOrderBook
+        class << self
+          attr_accessor :pairs
+        end
+
         PRICE_TREND_SIZE = 30
 
         SLOPE_TREND_SIZE = 7
 
+        URL = 'https://api.exmo.com/v1/order_book/'.freeze
+
         # Инициализирует клас объекта
         #
-        def initialize
-          @url = 'https://api.exmo.com/v1/order_book/'
-          @price_trend = { ask: [], bid: [] }
-          @slope_trend = { ask: [], bid: [] }
+        def initialize(initial_pairs)
+          @price_trend = {}
+          @slope_trend = {}
+          self.class.pairs = initial_pairs
+          update_pairs_in_trends
         end
-
-        attr_reader :url, :price_trend, :slope_trend
 
         # Запускает поток с get запросом на апи биржи
         # и получает данные по открытым ордерам каждую секунду
@@ -32,25 +37,19 @@ module BitcoinCourseMonitoring
             loop do
               sleep 1
               p $trend
-              p slope_trend
+              update_pairs_in_trends if price_trend.keys != pairs
               begin
                 response =
-                  RestClient.get(url, params: { limit: 1, pair: 'BTC_USD' }) { |resp, _request, _result| resp }
+                  RestClient.get(URL, params: params) { |resp, _request, _result| resp }
                 order_book = JSON.parse(response.body, symbolize_names: true)
                 unless order_book.key?(:error)
-                  pair_orders = order_book[:BTC_USD]
-                  $order_book = pair_orders
-                  ask_top = pair_orders[:ask_top].to_f
-                  bid_top = pair_orders[:bid_top].to_f
-                  update_ask_price_trend(ask_top)
-                  update_bid_price_trend(bid_top)
-                  if ask_price_trend_is_full?
-                    update_ask_slope_trend(slope(price_trend[:ask]))
-                    $trend[:ask_slope] = positive_ask_slope_trend?
-                  end
-                  if bid_price_trend_is_full?
-                    update_bid_slope_trend(slope(price_trend[:bid]))
-                    $trend[:bid_slope] = negative_bid_slope_trend?
+                  pairs.each do |pair|
+                    pair_orders = order_book[pair]
+                    $order_book[pair] = pair_orders
+                    ask_top = pair_orders[:ask_top].to_f
+                    bid_top = pair_orders[:bid_top].to_f
+                    update_price_trend(ask_top, pair, :ask)
+                    update_price_trend(bid_top, pair, :bid)
                   end
                 end
               rescue => e
@@ -64,58 +63,65 @@ module BitcoinCourseMonitoring
 
         private
 
-        def positive_ask_slope_trend?
-          ask_slope_trend_is_full? && slope_trend[:ask].all?(&:positive?)
+        attr_reader :price_trend, :slope_trend
+
+        def update_pairs_in_trends
+          pairs.each do |pair|
+            next if price_trend[pair]
+            price_trend[pair] = { ask: [], bid: [] }
+            slope_trend[pair] = { ask: [], bid: [] }
+          end
         end
 
-        def negative_bid_slope_trend?
-          bid_slope_trend_is_full? && slope_trend[:bid].all?(&:negative?)
+        def update_price_trend(value, pair, type)
+          trend = price_trend[pair][type]
+          return if trend.last == value
+          trend.push(value)
+          return unless price_trend_is_full?(trend)
+          trend.shift
+          update_slope_trend(trend, pair, type)
         end
 
-        def update_ask_slope_trend(ask_slope)
-          return if slope_trend[:ask].last == ask_slope
-          slope_trend[:ask].shift if ask_slope_trend_is_full?
-          slope_trend[:ask].push(ask_slope)
+        def price_trend_is_full?(trend)
+          trend.size > PRICE_TREND_SIZE
         end
 
-        def update_bid_slope_trend(bid_slope)
-          return if slope_trend[:bid].last == bid_slope
-          slope_trend[:bid].shift if bid_slope_trend_is_full?
-          slope_trend[:bid].push(bid_slope)
+        def update_slope_trend(trend, pair, type)
+          slope_value = slope(trend)
+          selected_slope_trend = slope_trend[pair][type]
+          return if selected_slope_trend.last == slope_value
+          selected_slope_trend.push(slope_value)
+          return unless slope_trend_is_full?(selected_slope_trend)
+          selected_slope_trend.shift
+          update_global_trend(selected_slope_trend, pair, type)
         end
 
-        def ask_slope_trend_is_full?
-          slope_trend[:ask].size >= SLOPE_TREND_SIZE
+        def slope_trend_is_positive?(trend)
+          trend.all?(&:positive?)
         end
 
-        def bid_slope_trend_is_full?
-          slope_trend[:bid].size >= SLOPE_TREND_SIZE
+        def slope_trend_is_negative?(trend)
+          trend.all?(&:negative?)
         end
 
-        def update_ask_price_trend(ask)
-          return if price_trend[:ask].last == ask
-          price_trend[:ask].shift if ask_price_trend_is_full?
-          price_trend[:ask].push(ask)
+        def slope_trend_is_full?(trend)
+          trend.size > SLOPE_TREND_SIZE
         end
 
-        def update_bid_price_trend(bid)
-          return if price_trend[:bid].last == bid
-          price_trend[:bid].shift if bid_price_trend_is_full?
-          price_trend[:bid].push(bid)
-        end
-
-        def ask_price_trend_is_full?
-          price_trend[:ask].size >= PRICE_TREND_SIZE
-        end
-
-        def bid_price_trend_is_full?
-          price_trend[:bid].size >= PRICE_TREND_SIZE
+        def update_global_trend(trend, pair, type)
+          $trend[pair] = { ask_slope: false, bid_slope: false } unless $trend[pair]
+          $trend[pair][:"#{type}_slope"] = if type == :ask
+                                             slope_trend_is_positive?(trend)
+                                           else
+                                             slope_trend_is_negative?(trend)
+                                           end
         end
 
         def slope(trend)
           numbers_avg = numbers_average(trend)
           trend_size = trend.size
-          (sum_of_multiplication(trend) - trend_size * numbers_avg * values_average(trend)) / (sum_of_squares_of_numbers(trend) - trend_size * numbers_avg ** 2)
+          (sum_of_multiplication(trend) - trend_size * numbers_avg * values_average(trend)) /
+            (sum_of_squares_of_numbers(trend) - trend_size * numbers_avg ** 2)
         end
 
         def numbers_average(trend)
@@ -135,6 +141,14 @@ module BitcoinCourseMonitoring
           trend.each_with_index.inject(0) do |sum, (val, i)|
             sum + (val * (i + 1))
           end
+        end
+
+        def pairs
+          self.class.pairs
+        end
+
+        def params
+          { limit: 1, pair: pairs.join(',') }
         end
       end
     end
