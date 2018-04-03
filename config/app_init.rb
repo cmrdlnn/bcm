@@ -5,8 +5,8 @@
 # Файл инициализации сервиса
 #
 
-require 'logger'
 require 'dotenv'
+require 'logger'
 require 'rest-client'
 
 # Корневая директория
@@ -30,9 +30,8 @@ end
 
 $app_name = 'bitcoin_course_monitoring'
 $lib = "#{$root}/lib/#{$app_name}"
-$pair = {}
 $order_book = {}
-$trend = { ask_slope: nil, bid_slope: nil }
+$trend = {}
 
 # Загрузка инициализации составных частей приложения
 Dir["#{__dir__}/initializers/*.rb"].sort.each(&method(:require))

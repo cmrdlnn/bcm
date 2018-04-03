@@ -16,7 +16,9 @@ module BitcoinCourseMonitoring
       # Возобновляет торги после остановки сервера
       #
       def launch!
+        pairs = []
         trades.each do |trade|
+          pairs.push(trade.pair.to_sym)
           if trade.orders.count.zero?
             course = trade.start_course
             Services::Exmo::Trade.new(trade, course, @stage).start
@@ -28,6 +30,7 @@ module BitcoinCourseMonitoring
             end
           end
         end
+        Services::Exmo::AutoOrderBook.new(pairs).order_book
       end
 
       attr_reader :start_course, :stage
@@ -67,27 +70,28 @@ module BitcoinCourseMonitoring
           .where(trade_id: trade_id).order(:created_at).all
       end
 
-      # Записывает состояние и старт курс для продолжения торгов с момента покупки
+      # Записывает состояние и старт курс для продолжения торгов с момента
+      # покупки
       #
       def buy_order(order)
         if order.state == 'error'
           @stage = 1
-        elsif order.amount.zero? && Time.now - order.created_at > 180
+        elsif order.amount.zero? && Time.now - order.created_at > 60
           order.cancel_order
           @stage = 1
         elsif order.amount.positive?
           @start_course = order.price
           @stage = 3
         end
-
       end
 
-      # Записывает состояние и старт курс для продолжения торгов с момента продажи
+      # Записывает состояние и старт курс для продолжения торгов с момента
+      # продажи
       #
       def sell_order(order)
         if order.state == 'error'
           @stage = 3
-        elsif order.amount.zero? && Time.now - order.created_at > 180
+        elsif order.amount.zero? && Time.now - order.created_at > 60
           order.cancel_order
           @stage = 3
         elsif order.amount.positive?

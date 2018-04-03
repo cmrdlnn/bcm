@@ -91,11 +91,13 @@ class Header extends Component {
           </NavItem>
           */ }
           <NavItem>
-            <Dropdown direction="up" isOpen={dropdownOpen} toggle={this.toggle}>
-              <DropdownToggle className="nav-link dropdown-toggle">
-                { /* <img src='img/avatars/6.jpg' className="img-avatar" alt="admin@bootstrapmaster.com"/> */ }
-                <span className="d-md-down-none">{this.props.login}</span>
-              </DropdownToggle>
+            <Dropdown isOpen={dropdownOpen} toggle={this.toggle}>
+              <div className={dropdownOpen ? 'dropup' : ''}>
+                <DropdownToggle className="nav-link dropdown-toggle">
+                  { /* <img src='img/avatars/6.jpg' className="img-avatar" alt="admin@bootstrapmaster.com"/> */ }
+                  <span className="d-md-down-none">{this.props.login}</span>
+                </DropdownToggle>
+              </div>
               <DropdownMenu right className={dropdownOpen ? 'show' : ''}>
                 { /*
                 <DropdownItem header tag="div" className="text-center"><strong>Account</strong></DropdownItem>

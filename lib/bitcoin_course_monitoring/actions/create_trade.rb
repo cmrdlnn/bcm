@@ -39,7 +39,6 @@ module BitcoinCourseMonitoring
       #
       def create_trade
         check_trader!
-        p "params: #{params}"
         create_data = params.merge(user_id: user_id, created_at: Time.now)
         trade = BitcoinCourseMonitoring::Models::Trade.create(create_data)
         trade_values = trade.values

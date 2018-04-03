@@ -27,7 +27,6 @@ module BitcoinCourseMonitoring
         def user_info
           response =
             RestClient.post(url, payload, headers) { |resp, _request, _result| resp }
-          p "user_info: #{response}"
           info = JSON.parse(response, symbolize_names: true)
           info.slice(:balances, :reserved, :error)
         rescue => e

@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -23,14 +24,29 @@ const onCloseTradeMessage = 'После того, как вы остановит
 class TradesPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { modalIsOpen: false };
+    this.state = {
+      modalIsOpen: false,
+      sourceCurrency: null,
+      targetCurrency: null,
+    };
   }
 
   componentWillMount() {
     const { match, tradeFetch } = this.props;
     const { id } = match.params;
     tradeFetch(id);
-    this.fetcher = setInterval(() => tradeFetch(id), 10000);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { trade, tradeFetch } = nextProps;
+    if (!this.props.trade && trade) {
+      const match = trade[0].pair.match(/^(.+)_(.+)$/);
+      const [, targetCurrency, sourceCurrency] = match;
+      this.setState({ sourceCurrency, targetCurrency });
+      if (!trade[0].closed) {
+        this.fetcher = setInterval(() => tradeFetch(trade[0].id), 10000);
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -41,7 +57,7 @@ class TradesPage extends Component {
   upToEighthDecimalPlace = value => Math.round(value * 100000000) / 100000000
 
   convertStatus = (status) => {
-    switch(status) {
+    switch (status) {
       case 'processing':
         return { text: 'В обработке', style: { color: '#007bff' } };
 
@@ -53,6 +69,9 @@ class TradesPage extends Component {
 
       case 'error':
         return { text: 'Ошибка', style: { color: '#dc3545' } };
+
+      default:
+        return { text: 'Неопределённый Статус', style: { color: '#dc3545' } };
     }
   }
 
@@ -61,10 +80,12 @@ class TradesPage extends Component {
 
     if (!trade) return null;
 
-    const balanceUSD = (trade[1].balances && trade[1].balances.USD) || '0';
-    const balanceBTC = (trade[1].balances && trade[1].balances.BTC) || '0';
-    const reservedUSD = (trade[1].reserved && trade[1].reserved.USD) || '0';
-    const reservedBTC = (trade[1].reserved && trade[1].reserved.BTC) || '0';
+    const { sourceCurrency, targetCurrency } = this.state;
+
+    const sourceBalance = (trade[1].balances && trade[1].balances[sourceCurrency]) || '0';
+    const targetBalance = (trade[1].balances && trade[1].balances[targetCurrency]) || '0';
+    const sourceReserved = (trade[1].reserved && trade[1].reserved[sourceCurrency]) || '0';
+    const targetReserved = (trade[1].reserved && trade[1].reserved[targetCurrency]) || '0';
 
     return (
       <div className="animated fadeIn">
@@ -89,13 +110,13 @@ class TradesPage extends Component {
               <hr />
               <InfoRow title="Выставленный объём торгов" value={trade[0].order_price} />
               <hr />
-              <InfoRow title="Текущий баланс в долларах" value={balanceUSD} />
+              <InfoRow title={`Текущий баланс ${sourceCurrency}`} value={sourceBalance} />
               <hr />
-              <InfoRow title="Текущий баланс в биткоинах" value={balanceBTC} />
+              <InfoRow title={`Текущий баланс ${targetCurrency}`} value={targetBalance} />
               <hr />
-              <InfoRow title="Долларов зарезервировано в ордерах" value={reservedUSD} />
+              <InfoRow title={`${sourceCurrency} зарезервировано в ордерах`} value={sourceReserved} />
               <hr />
-              <InfoRow title="Биткоинов зарезервировано в ордерах" value={reservedBTC} />
+              <InfoRow title={`${targetCurrency} зарезервировано в ордерах`} value={targetReserved} />
               { trade[0].closed ? null : (
                 <Fragment>
                   <hr />
@@ -141,7 +162,7 @@ class TradesPage extends Component {
                           const sum = this.upToEighthDecimalPlace(order.quantity * order.price);
                           const status = this.convertStatus(order.state);
                           return (
-                            <tr>
+                            <tr key={order.id}>
                               <td>{ new Date(order.created_at).toLocaleString('ru') }</td>
                               <td
                                 style={{ color: isBuy ? '#347ffb' : '#ff0026' }}
@@ -170,6 +191,22 @@ class TradesPage extends Component {
     );
   }
 }
+
+TradesPage.defaultProps = { trade: null };
+
+TradesPage.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
+  trade: PropTypes.arrayOf(
+    PropTypes.object,
+  ),
+  tradeClear: PropTypes.func.isRequired,
+  tradeFetch: PropTypes.func.isRequired,
+  tradeUpdate: PropTypes.func.isRequired,
+};
 
 const mapStateToProps = ({ trades: { current } }) => ({ trade: current });
 

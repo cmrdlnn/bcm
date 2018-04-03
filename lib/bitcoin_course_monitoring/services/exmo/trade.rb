@@ -11,20 +11,15 @@ module BitcoinCourseMonitoring
         COMMISSION = 0.002
 
         def initialize(trade, course, stage = 1)
-          @key = trade.key
-          p key
-          @secret = trade.secret
-          p secret
-          @trade_id = trade.id
-          @pair = trade.pair
-          @order_price = trade.order_price
-          @min = $order_book[:ask_top].to_f
-          @max = $order_book[:bid_top].to_f
+          @trade = trade
+          @pair = trade.pair.to_sym
           @start_course = course
           @stage = stage
         end
 
-        attr_reader :order_price, :start_course, :trade_id, :pair, :key, :secret
+        attr_reader :start_course
+
+        attr_reader :trade, :pair
 
         attr_reader :order_id
 
@@ -33,56 +28,58 @@ module BitcoinCourseMonitoring
         def start
           Thread.new do
             loop do
+              sleep 1
               break if trade_closed?
-              ask = $order_book[:ask_top].to_f
+              next unless $order_book[pair] && $trend[pair]
+              ask = $order_book[pair][:ask_top].to_f
               p "ask: #{ask}"
               p "start_course: #{start_course}"
-              if ask <= start_course && $trend[:ask_slope] == true
+              if ask <= start_course && $trend[pair][:ask_slope] == true
                 buy(ask)
                 launch_trade
                 break
               end
-              sleep 1
             end
           end
         end
 
         def launch_trade
           loop do
+            sleep 1
             break if trade_closed?
+            next unless $order_book[pair] && $trend[pair]
             case stage
             when 1
-              ask = $order_book[:ask_top].to_f
+              ask = $order_book[pair][:ask_top].to_f
               p "ask: #{ask}"
               p "Падение цены: #{start_course - ask}"
-              buy(ask) if $trend[:ask_slope] == true
+              buy(ask) if $trend[pair][:ask_slope] == true
             when 2
               check_buy_order
             when 3
-              bid = $order_book[:bid_top].to_f
+              bid = $order_book[pair][:bid_top].to_f
               profit = profit(bid)
               p "bid: #{bid}"
               p "Прибыль: #{profit}"
-              sell(bid) if profit.positive? && $trend[:bid_slope] == true
+              sell(bid) if profit.positive? && $trend[pair][:bid_slope] == true
             when 4
               check_sell_order
             end
-            sleep 1
           end
         end
 
         private
 
         def trade_closed?
-          trade = Models::Trade.with_pk(trade_id)
-          trade&.closed
+          actual_trade = Models::Trade.with_pk(trade.id)
+          actual_trade&.closed
         end
 
         def check_buy_order
           order = Models::Order.with_pk(order_id)
           if order.state == 'error'
             @stage = 1
-          elsif order.amount.zero? && Time.now - order.created_at > 180
+          elsif order.amount.zero? && Time.now - order.created_at > 60
             order.cancel_order
             @stage = 1
           elsif order.amount.positive?
@@ -95,7 +92,7 @@ module BitcoinCourseMonitoring
           order = Models::Order.with_pk(order_id)
           if order.state == 'error'
             @stage = 3
-          elsif order.amount.zero? && Time.now - order.created_at > 180
+          elsif order.amount.zero? && Time.now - order.created_at > 60
             order.cancel_order
             @stage = 3
           elsif order.amount.positive?
@@ -106,7 +103,7 @@ module BitcoinCourseMonitoring
 
         def buy(ask)
           price = ask + 0.00000001
-          quantity = (order_price.to_f / price).floor(8)
+          quantity = (trade.order_price.to_f / price).floor(8)
           type = 'buy'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
@@ -122,7 +119,7 @@ module BitcoinCourseMonitoring
           p "profit: #{profit(bid)}"
           price = bid - 0.00000001
           amount =
-            Models::Order.where(trade_id: trade_id, type: 'buy').order(:created_at).last.amount
+            Models::Order.where(trade_id: trade.id, type: 'buy').order(:created_at).last.amount
           quantity = (amount * 0.998).floor(8)
           type = 'sell'
           create_data = create_order_data(price, quantity, type)
@@ -159,7 +156,7 @@ module BitcoinCourseMonitoring
             price: price,
             quantity: quantity,
             pair: pair,
-            trade_id: trade_id
+            trade_id: trade.id
           }
         end
 
@@ -173,7 +170,7 @@ module BitcoinCourseMonitoring
           return false if info.nil? || info.key?(:error)
           case type
           when 'buy'
-            info[:balances][:USD].to_f <= order_price
+            info[:balances][:USD].to_f <= trade.order_price
           when 'sell'
             info[:balances][:BTC].to_f.zero?
           end
@@ -182,7 +179,7 @@ module BitcoinCourseMonitoring
         # Возвращает баланс аккаунта
         #
         def user_info
-          Services::Exmo::UserInfo.new(key, secret).user_info
+          Services::Exmo::UserInfo.new(trade.key, trade.secret).user_info
         end
       end
     end

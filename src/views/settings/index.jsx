@@ -14,8 +14,8 @@ import { changeEmail, changePassword } from 'modules/user';
 import { showAlert } from 'modules/alerts';
 
 import ConfirmModal from 'components/ConfirmModal';
-import Form from 'components/Form';
 import Field from 'components/Field';
+import Form from 'components/Form';
 
 class Settings extends Component {
   constructor(props) {
@@ -43,17 +43,17 @@ class Settings extends Component {
   }
 
   changePassword = (data) => {
-    const { showAlert, changePassword } = this.props;
+    const { alertShow, passwordChange } = this.props;
 
     if (data.new_password !== data.confirm_password) {
       this.toggle();
-      showAlert('Пароли не совпадают');
+      alertShow('Пароли не совпадают');
       return;
     }
 
     if (data.new_password.length < 6) {
       this.toggle();
-      showAlert('Новый пароль слишком короткий');
+      alertShow('Новый пароль слишком короткий');
       return;
     }
 
@@ -63,7 +63,7 @@ class Settings extends Component {
       modalIsOpen: true,
       onConfirm: () => {
         this.toggle();
-        this.props.changePassword(data);
+        passwordChange(data);
       },
     });
   }
@@ -142,17 +142,18 @@ class Settings extends Component {
 }
 
 Settings.propTypes = {
-  showAlert: PropTypes.func.isRequired,
   changeEmail: PropTypes.func.isRequired,
-  changePassword: PropTypes.func.isRequired,
+  passwordChange: PropTypes.func.isRequired,
+  role: PropTypes.string.isRequired,
+  alertShow: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ user: { role } }) => ({ role });
 
 const mapDispatchToProps = dispatch => ({
-  showAlert: bindActionCreators(showAlert, dispatch),
+  alertShow: bindActionCreators(showAlert, dispatch),
   changeEmail: bindActionCreators(changeEmail, dispatch),
-  changePassword: bindActionCreators(changePassword, dispatch),
+  passwordChange: bindActionCreators(changePassword, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Settings);

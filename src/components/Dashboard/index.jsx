@@ -12,8 +12,8 @@ import TickerCard from './components/TickerCard';
 class Dashboard extends Component {
   componentWillMount() {
     const { orderBookFetch, tickerFetch } = this.props;
-    orderBookFetch();
-    this.orderBook = setInterval(orderBookFetch, 6000);
+    orderBookFetch('BTC_USD');
+    this.orderBook = setInterval(() => orderBookFetch('BTC_USD'), 6000);
     tickerFetch();
     this.ticker = setInterval(tickerFetch, 6000);
   }
@@ -118,7 +118,7 @@ Dashboard.propTypes = {
   sell_price: PropTypes.string,
 };
 
-const mapStateToProps = ({ statistic: { order_book: orderBook, ticker } }) => ({
+const mapStateToProps = ({ statistic: { orderBook, ticker } }) => ({
   orderBook,
   ...ticker,
 });

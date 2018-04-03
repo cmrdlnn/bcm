@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Col, Row } from 'reactstrap';
 
-const OrderList = ({ helper, title, value }) => (
+const IndoRow = ({ helper, title, value }) => (
   <Row>
     <Col xs="9" className="text-left">
       <div className="title">{title}</div>
@@ -15,15 +15,18 @@ const OrderList = ({ helper, title, value }) => (
   </Row>
 );
 
-OrderList.defaultProps = {
+IndoRow.defaultProps = {
   helper: null,
   value: null,
 };
 
-OrderList.propTypes = {
+IndoRow.propTypes = {
   helper: PropTypes.string,
   title: PropTypes.string.isRequired,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
 };
 
-export default OrderList;
+export default IndoRow;
