@@ -91,6 +91,17 @@ class TradeCreation extends Component {
     return `${targetCurrency}_${sourceCurrency}`;
   }
 
+  startCourseMinimum = (quantity) => {
+    if (quantity === 0) return;
+    let min = quantity;
+    let rank = 1;
+    while (min < 1) {
+      min *= 10;
+      rank *= 10;
+    }
+    return Math.ceil(min) / rank;
+  }
+
   render() {
     const {
       ask,
@@ -154,7 +165,7 @@ class TradeCreation extends Component {
                   addon={<i className="fa fa-dollar" />}
                   helper="Количество исходной валюты на счету, которая войдёт в оборот торгов"
                   max={balances && balances[sourceCurrency]}
-                  min={Math.ceil(quantity * askTop)}
+                  min={this.startCourseMinimum(quantity * askTop)}
                   name="order_price"
                   placeholder="Введите оборот"
                   required
