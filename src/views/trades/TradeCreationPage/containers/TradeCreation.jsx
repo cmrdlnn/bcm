@@ -169,6 +169,7 @@ class TradeCreation extends Component {
                   name="order_price"
                   placeholder="Введите оборот"
                   required
+                  step="any"
                   title="Оборот"
                   type="number"
                 />
