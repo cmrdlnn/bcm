@@ -146,6 +146,7 @@ class TradeCreation extends Component {
                   name="start_course"
                   placeholder="Введите старт-курс"
                   required
+                  step="any"
                   title="Старт-курс"
                   type="number"
                 />
