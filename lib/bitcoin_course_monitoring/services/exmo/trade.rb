@@ -1,4 +1,4 @@
-# encoding: utf-8
+а# encoding: utf-8
 
 module BitcoinCourseMonitoring
   module Services
@@ -82,7 +82,11 @@ module BitcoinCourseMonitoring
           elsif order.amount.zero? && Time.now - order.created_at > 60
             order.cancel_order
             @stage = 1
-          elsif order.amount.positive?
+          elsif order.amount < order.quantity && Time.now - order.created_at > 60
+            order.cancel_order
+            @start_course = order.price
+            @stage = 3
+          elsif order.amount == order.quantity
             @start_course = order.price
             @stage = 3
           end
@@ -95,7 +99,11 @@ module BitcoinCourseMonitoring
           elsif order.amount.zero? && Time.now - order.created_at > 60
             order.cancel_order
             @stage = 3
-          elsif order.amount.positive?
+          elsif order.amount < order.quantity && Time.now - order.created_at > 60
+            order.cancel_order
+            @start_course = order.price
+            @stage = 1
+          elsif order.amount == order.quantity
             @start_course = order.price
             @stage = 1
           end

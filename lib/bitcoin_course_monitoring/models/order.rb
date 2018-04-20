@@ -28,6 +28,11 @@ module BitcoinCourseMonitoring
     #   @return [Flaot]
     #     количество покупаемой или продаваемой криптовалюты
     #
+    # @!attribute amount
+    #   Количество криптовалюты которое было исполнено по ордеру
+    #   @return [Flaot]
+    #     количество криптовалюты которое было исполнено по ордеру
+    #
     # @!attribute price
     #   Цена покупки или продажи
     #   @return [Float]
