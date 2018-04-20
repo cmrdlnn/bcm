@@ -1,4 +1,4 @@
-а# encoding: utf-8
+# encoding: utf-8
 
 module BitcoinCourseMonitoring
   module Services
