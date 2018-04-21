@@ -25,6 +25,8 @@ module BitcoinCourseMonitoring
 
         attr_reader :stage
 
+        attr_reader :remainder
+
         def start
           Thread.new do
             loop do
@@ -101,9 +103,11 @@ module BitcoinCourseMonitoring
             @stage = 3
           elsif order.amount < order.quantity && Time.now - order.created_at > 60
             order.cancel_order
+            @remainder = order.quantity - order.amount
             @start_course = order.price
-            @stage = 1
+            @stage = 3
           elsif order.amount == order.quantity
+            @remainder = 0
             @start_course = order.price
             @stage = 1
           end
@@ -128,7 +132,8 @@ module BitcoinCourseMonitoring
           price = bid - 0.00000001
           amount =
             Models::Order.where(trade_id: trade.id, type: 'buy').order(:created_at).last.amount
-          quantity = (amount * 0.998).floor(8)
+          quantity =
+            remainder.zero? ? (amount * 0.998).floor(8) : remainder
           type = 'sell'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
