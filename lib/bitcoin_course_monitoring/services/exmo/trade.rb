@@ -15,6 +15,7 @@ module BitcoinCourseMonitoring
           @pair = trade.pair.to_sym
           @start_course = course
           @stage = stage
+          @remainder = 0
         end
 
         attr_reader :start_course
@@ -133,7 +134,7 @@ module BitcoinCourseMonitoring
           amount =
             Models::Order.where(trade_id: trade.id, type: 'buy').order(:created_at).last.amount
           quantity =
-            remainder.zero? ? (amount * 0.998).floor(8) : remainder
+            @remainder.zero? ? (amount * 0.998).floor(8) : remainder
           type = 'sell'
           create_data = create_order_data(price, quantity, type)
           return if check_balance!(type)
