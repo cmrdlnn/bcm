@@ -32,7 +32,7 @@ const OrderList = ({ list, title }) => (
   </Card>
 );
 
-OrderList.defaultProps = { list: null };
+OrderList.defaultProps = { list: [] };
 
 OrderList.propTypes = {
   title: PropTypes.string.isRequired,
