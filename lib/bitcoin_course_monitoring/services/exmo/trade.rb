@@ -64,6 +64,8 @@ module BitcoinCourseMonitoring
               profit = profit(bid)
               p "bid: #{bid}"
               p "Прибыль: #{profit}"
+              sell(bid) if slump?(bid)
+              sell(bid) if low_rate?(bid)
               sell(bid) if profit.positive? && $trend[pair][:bid_slope] == true
             when 4
               check_sell_order
@@ -72,6 +74,18 @@ module BitcoinCourseMonitoring
         end
 
         private
+
+        def slump?(bid)
+          order = Models::Order.with_pk(order_id)
+          return true if (order.price * 0.95) > bid && Time.now - 300 > order.created_at
+          false
+        end
+
+        def low_rate?(bid)
+          order = Models::Order.with_pk(order_id)
+          return true if (order.price * 0.9) > bid && Time.now - 36000 > order.created_at
+          false
+        end
 
         def trade_closed?
           actual_trade = Models::Trade.with_pk(trade.id)
