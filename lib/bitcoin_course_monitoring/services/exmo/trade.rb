@@ -10,12 +10,13 @@ module BitcoinCourseMonitoring
       class Trade
         COMMISSION = 0.002
 
-        def initialize(trade, course, stage = 1)
+        def initialize(trade, course, stage = 1, remainder = 0, order_id = 0)
           @trade = trade
           @pair = trade.pair.to_sym
           @start_course = course
           @stage = stage
-          @remainder = 0
+          @remainder = remainder
+          @order_id = order_id
         end
 
         attr_reader :start_course
@@ -28,6 +29,7 @@ module BitcoinCourseMonitoring
 
         attr_reader :remainder
 
+        # Запускает механизм торгов
         def start
           Thread.new do
             loop do
@@ -46,6 +48,8 @@ module BitcoinCourseMonitoring
           end
         end
 
+        # Выполняет мониторинг ордеров на покупку и на продажу создает
+        # и отменяет их в зависимости от выполненных условий
         def launch_trade
           loop do
             sleep 1
@@ -64,8 +68,7 @@ module BitcoinCourseMonitoring
               profit = profit(bid)
               p "bid: #{bid}"
               p "Прибыль: #{profit}"
-              sell(bid) if slump?(bid)
-              sell(bid) if low_rate?(bid)
+              sell(bid) if slump?(bid) || low_rate?(bid)
               sell(bid) if profit.positive? && $trend[pair][:bid_slope] == true
             when 4
               check_sell_order
@@ -75,23 +78,41 @@ module BitcoinCourseMonitoring
 
         private
 
+        # Проверяет было или нет резкое падение цены
+        #
+        # @params [Float] bid
+        #  текущая цена целевой валюты
+        # @return [Boolean]
+        #  результат проверки
         def slump?(bid)
           order = Models::Order.with_pk(order_id)
           return true if (order.price * 0.95) > bid && Time.now - 300 > order.created_at
           false
         end
 
+        # Проверяет было или нет падение цены более чем на 10% за 10 часов
+        #
+        # @params [Float] bid
+        #  текущая цена целевой валюты
+        # @return [Boolean]
+        #  результат проверки
         def low_rate?(bid)
           order = Models::Order.with_pk(order_id)
           return true if (order.price * 0.9) > bid && Time.now - 36000 > order.created_at
           false
         end
 
+        # Проверяет закрыты или нет текущие торги
+        #
+        # @return [Boolean]
+        #  результат проверки
         def trade_closed?
-          actual_trade = Models::Trade.with_pk(trade.id)
-          actual_trade&.closed
+          @actual_trade ||= Models::Trade.with_pk(trade.id)
+          @actual_trade&.closed
         end
 
+        # Проверяет состояние ордера на покупку и выполняет операции
+        # в зависимости от условий
         def check_buy_order
           order = Models::Order.with_pk(order_id)
           if order.state == 'error'
@@ -109,6 +130,8 @@ module BitcoinCourseMonitoring
           end
         end
 
+        # Проверяет состояние ордера на продажу и выполняет операции
+        # в зависимости от условий
         def check_sell_order
           order = Models::Order.with_pk(order_id)
           if order.state == 'error'
@@ -128,6 +151,10 @@ module BitcoinCourseMonitoring
           end
         end
 
+        # Создает ордер на покупку
+        #
+        # @params [Float] ask
+        #  текущая цена целевой валюты
         def buy(ask)
           price = ask + 0.00000001
           quantity = (trade.order_price.to_f / price).floor(8)
@@ -142,6 +169,10 @@ module BitcoinCourseMonitoring
           @stage = 2
         end
 
+        # Создает ордер на продажу
+        #
+        # @params [Float] bid
+        #  текущая цена целевой валюты
         def sell(bid)
           p "profit: #{profit(bid)}"
           price = bid - 0.00000001
@@ -160,6 +191,12 @@ module BitcoinCourseMonitoring
           @stage = 4
         end
 
+        # Высчитывает профит
+        #
+        # @params [Float] bid
+        #  текущая цена целевой валюты
+        # @return [Float]
+        #  профит
         def profit(bid)
           bid - start_course.to_f / (1 - COMMISSION) - bid * COMMISSION
         end
@@ -168,16 +205,12 @@ module BitcoinCourseMonitoring
         #
         # @param [Float] price
         #  цена за еденицу
-        #
         # @param [Float] quantity
         #  количество
-        #
         # @param [String] type
         #  тип ордера
-        #
         # @return [Hash]
         #  данные для создания ордера
-        #
         def create_order_data(price, quantity, type)
           {
             type: type,
@@ -192,20 +225,19 @@ module BitcoinCourseMonitoring
         #
         # @return [Boolean]
         #  результат проверки
-        #
         def check_balance!(type)
           info = user_info
+          pair = trade.pair.split('_')
           return false if info.nil? || info.key?(:error)
           case type
           when 'buy'
-            info[:balances][:USD].to_f <= trade.order_price
+            info[:balances][pair[1].to_sym].to_f <= trade.order_price
           when 'sell'
-            info[:balances][:BTC].to_f.zero?
+            info[:balances][pair[0].to_sym].to_f.zero?
           end
         end
 
         # Возвращает баланс аккаунта
-        #
         def user_info
           Services::Exmo::UserInfo.new(trade.key, trade.secret).user_info
         end

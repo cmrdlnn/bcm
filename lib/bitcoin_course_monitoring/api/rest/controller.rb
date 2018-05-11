@@ -5,6 +5,7 @@ require 'sinatra/base'
 
 require_relative 'helpers'
 require_relative '../../tasks/resumption_trading'
+require_relative '../../scheduler'
 
 Dir["#{$lib}/actions/*.rb"].each(&method(:require))
 
@@ -27,8 +28,20 @@ module BitcoinCourseMonitoring
         helpers Helpers
 
         def self.run!
-          Tasks::ResumptionTrading.launch!
           Thread.abort_on_exception = true
+          BitcoinCourseMonitoring::Scheduler.launch
+          BitcoinCourseMonitoring::Scheduler.every('1d') do
+            BitcoinCourseMonitoring::Models::Order
+              .where(state: 'error', trade_id: trade_id)
+              .exclude(
+                id: BitcoinCourseMonitoring::Models::Order
+                      .group(:trade_id)
+                      .select(:trade_id, :MAX.sql_function(:id))
+                      .map(:max)
+              )
+              .delete
+          end
+          Tasks::ResumptionTrading.launch!19
           super
         end
 

@@ -26,14 +26,15 @@ module BitcoinCourseMonitoring
             order_stage(trade.id)
             course = @start_course
             Thread.new do
-              Services::Exmo::Trade.new(trade, course, @stage).launch_trade
+              Services::Exmo::Trade.new(trade, course, @stage, @remainder, @order_id)
+                .launch_trade
             end
           end
         end
         Services::Exmo::AutoOrderBook.new(pairs).order_book
       end
 
-      attr_reader :start_course, :stage
+      attr_reader :start_course, :stage, :remainder, :order_id
 
       private
 
@@ -50,6 +51,7 @@ module BitcoinCourseMonitoring
       #
       def order_stage(trade_id)
         orders = orders(trade_id)
+        @order_id = orders.last.id
         if orders.last.type == 'buy'
           buy_order(orders.last)
         elsif orders.last.type == 'sell'
@@ -74,6 +76,7 @@ module BitcoinCourseMonitoring
       # покупки
       #
       def buy_order(order)
+        @remainder = 0
         if order.state == 'error'
           @stage = 1
         elsif order.amount.zero? && Time.now - order.created_at > 60
@@ -85,16 +88,23 @@ module BitcoinCourseMonitoring
         end
       end
 
-      # Записывает состояние и старт курс для продолжения торгов с момента
-      # продажи
+      # Записывает состояние, остаток по ордеру и старт курс для продолжения
+      # торгов с момента продажи
       #
       def sell_order(order)
         if order.state == 'error'
+          @remainder = 0
           @stage = 3
         elsif order.amount.zero? && Time.now - order.created_at > 60
+          @remainder = 0
           order.cancel_order
           @stage = 3
-        elsif order.amount.positive?
+        elsif order.amount < order.quantity
+          @remainder = order.quantity - order.amount
+          order.cancel_order
+          @stage = 3
+        elsif order.amount == order.quantity
+          @remainder = 0
           @start_course = order.price
           @stage = 1
         end
