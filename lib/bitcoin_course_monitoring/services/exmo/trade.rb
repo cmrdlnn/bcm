@@ -68,7 +68,7 @@ module BitcoinCourseMonitoring
               profit = profit(bid)
               p "bid: #{bid}"
               p "Прибыль: #{profit}"
-              sell(bid) if slump?(bid) || low_rate?(bid)
+              sell(bid) if price_drop?(bid)
               sell(bid) if profit.positive? && $trend[pair][:bid_slope] == true
             when 4
               check_sell_order
@@ -78,28 +78,39 @@ module BitcoinCourseMonitoring
 
         private
 
+        # Проверяет было или нет падение цены
+        #
+        # @params [Float] bid
+        #  текущая цена
+        # @return [Boolean]
+        #  результат проверки
+        def price_drop?(bid)
+          order = Models::Order.with_pk(order_id)
+          slump?(bid, order) || low_rate?(bid, order)
+        end
+
         # Проверяет было или нет резкое падение цены
         #
         # @params [Float] bid
-        #  текущая цена целевой валюты
+        #  текущая цена
+        # @params [Models::Order] order
+        #  текущий ордер
         # @return [Boolean]
         #  результат проверки
-        def slump?(bid)
-          order = Models::Order.with_pk(order_id)
-          return true if (order.price * 0.95) > bid && Time.now - 300 > order.created_at
-          false
+        def slump?(bid, order)
+          (order.price * 0.95) > bid && Time.now - 300 > order.created_at
         end
 
         # Проверяет было или нет падение цены более чем на 10% за 10 часов
         #
         # @params [Float] bid
-        #  текущая цена целевой валюты
+        #  текущая цена
+        # @params [Models::Order] order
+        #  текущий ордер
         # @return [Boolean]
         #  результат проверки
-        def low_rate?(bid)
-          order = Models::Order.with_pk(order_id)
-          return true if (order.price * 0.9) > bid && Time.now - 36000 > order.created_at
-          false
+        def low_rate?(bid, order)
+          (order.price * 0.9) > bid && Time.now - 36000 > order.created_at
         end
 
         # Проверяет закрыты или нет текущие торги

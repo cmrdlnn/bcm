@@ -41,7 +41,7 @@ module BitcoinCourseMonitoring
               )
               .delete
           end
-          Tasks::ResumptionTrading.launch!19
+          Tasks::ResumptionTrading.launch!
           super
         end
 
