@@ -36,10 +36,10 @@ module BitcoinCourseMonitoring
               sleep 1
               break if trade_closed?
               next unless $order_book[pair] && $trend[pair]
-              ask = $order_book[pair][:ask_top].to_f
+              ask = $order_book[pair][:ask_top]
               p "ask: #{ask}"
               p "start_course: #{start_course}"
-              if ask <= start_course && $trend[pair][:ask_slope] == true
+              if ask <= start_course && $trend[pair][:ask_slope]
                 buy(ask)
                 launch_trade
                 break
@@ -57,19 +57,19 @@ module BitcoinCourseMonitoring
             next unless $order_book[pair] && $trend[pair]
             case stage
             when 1
-              ask = $order_book[pair][:ask_top].to_f
+              ask = $order_book[pair][:ask_top]
               p "ask: #{ask}"
               p "Падение цены: #{start_course - ask}"
-              buy(ask) if $trend[pair][:ask_slope] == true
+              buy(ask) if $trend[pair][:ask_slope]
             when 2
               check_buy_order
             when 3
-              bid = $order_book[pair][:bid_top].to_f
+              bid = $order_book[pair][:bid_top]
               profit = profit(bid)
               p "bid: #{bid}"
               p "Прибыль: #{profit}"
               sell(bid) if price_drop?(bid)
-              sell(bid) if profit.positive? && $trend[pair][:bid_slope] == true
+              sell(bid) if profit.positive? && $trend[pair][:bid_slope]
             when 4
               check_sell_order
             end
@@ -118,8 +118,7 @@ module BitcoinCourseMonitoring
         # @return [Boolean]
         #  результат проверки
         def trade_closed?
-          @actual_trade ||= Models::Trade.with_pk(trade.id)
-          @actual_trade&.closed
+          Models::Trade.with_pk(trade.id).closed
         end
 
         # Проверяет состояние ордера на покупку и выполняет операции

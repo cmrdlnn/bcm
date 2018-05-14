@@ -44,12 +44,14 @@ module BitcoinCourseMonitoring
                 order_book = JSON.parse(response.body, symbolize_names: true)
                 unless order_book.key?(:error)
                   pairs.each do |pair|
-                    pair_orders = order_book[pair]
-                    $order_book[pair] = pair_orders
-                    ask_top = pair_orders[:ask_top].to_f
-                    bid_top = pair_orders[:bid_top].to_f
+                    pair_orders = order_book[pair].transform_values do |val|
+                      val.is_a?(String) ? val.to_f : val
+                    end
+                    ask_top = pair_orders[:ask_top]
+                    bid_top = pair_orders[:bid_top]
                     update_price_trend(ask_top, pair, :ask)
                     update_price_trend(bid_top, pair, :bid)
+                    update_order_book(pair_orders, pair)
                   end
                 end
               rescue => e
@@ -64,6 +66,18 @@ module BitcoinCourseMonitoring
         private
 
         attr_reader :price_trend, :slope_trend
+
+        def update_order_book(pair_orders, pair)
+          $order_book[pair] = pair_orders unless $order_book[pair]
+          bid = pair_orders[:bid].map { |order| order.first.to_f }
+          average = bid.inject(0.0) { |sum, price| sum + price } / bid.size
+          current_bid_top = $order_book[pair][:bid_top]
+          if (average - pair_orders[:bid_top]).abs / current_bid_top > 0.1
+            $order_book[pair] = pair_orders.merge(bid_top: bid.max)
+          else
+            $order_book[pair] = pair_orders
+          end
+        end
 
         def update_pairs_in_trends
           pairs.each do |pair|
@@ -148,7 +162,7 @@ module BitcoinCourseMonitoring
         end
 
         def params
-          { limit: 1, pair: pairs.join(',') }
+          { limit: 3, pair: pairs.join(',') }
         end
       end
     end
