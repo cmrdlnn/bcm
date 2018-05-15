@@ -78,8 +78,10 @@ module BitcoinCourseMonitoring
       def buy_order(order)
         @remainder = 0
         if order.state == 'error'
+          @start_course = order.price
           @stage = 1
         elsif order.amount.zero? && Time.now - order.created_at > 60
+          @start_course = order.price
           order.cancel_order
           @stage = 1
         elsif order.amount.positive?
@@ -93,14 +95,17 @@ module BitcoinCourseMonitoring
       #
       def sell_order(order)
         if order.state == 'error'
+          @start_course = order.price
           @remainder = 0
           @stage = 3
         elsif order.amount.zero? && Time.now - order.created_at > 60
+          @start_course = order.price
           @remainder = 0
           order.cancel_order
           @stage = 3
         elsif order.amount < order.quantity
           @remainder = order.quantity - order.amount
+          @start_course = order.price
           order.cancel_order
           @stage = 3
         elsif order.amount == order.quantity
