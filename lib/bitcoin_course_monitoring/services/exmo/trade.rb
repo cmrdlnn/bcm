@@ -65,11 +65,12 @@ module BitcoinCourseMonitoring
               check_buy_order
             when 3
               bid = $order_book[pair][:bid_top]
+              ask = $order_book[pair][:ask_top]
               profit = profit(bid)
               p "bid: #{bid}"
               p "Прибыль: #{profit}"
-              sell(bid) if price_drop?(bid)
-              sell(bid) if profit.positive? && $trend[pair][:bid_slope]
+              sell(bid) if price_drop?(ask) ||
+                           profit.positive? && $trend[pair][:bid_slope]
             when 4
               check_sell_order
             end
@@ -80,37 +81,25 @@ module BitcoinCourseMonitoring
 
         # Проверяет было или нет падение цены
         #
-        # @params [Float] bid
+        # @params [Float] ask
         #  текущая цена
         # @return [Boolean]
         #  результат проверки
-        def price_drop?(bid)
+        def price_drop?(ask)
           order = Models::Order.with_pk(order_id)
-          slump?(bid, order) || low_rate?(bid, order)
+          slump?(order, ask, 0.95, 300) || slump?(order, ask, 0.9, 36_000)
         end
 
         # Проверяет было или нет резкое падение цены
         #
-        # @params [Float] bid
+        # @params [Float] ask
         #  текущая цена
         # @params [Models::Order] order
         #  текущий ордер
         # @return [Boolean]
         #  результат проверки
-        def slump?(bid, order)
-          (order.price * 0.95) > bid && Time.now - 300 > order.created_at
-        end
-
-        # Проверяет было или нет падение цены более чем на 10% за 10 часов
-        #
-        # @params [Float] bid
-        #  текущая цена
-        # @params [Models::Order] order
-        #  текущий ордер
-        # @return [Boolean]
-        #  результат проверки
-        def low_rate?(bid, order)
-          (order.price * 0.9) > bid && Time.now - 36000 > order.created_at
+        def slump?(order, price, proportion, time)
+          (order.price * proportion) > ask && Time.now - time > order.created_at
         end
 
         # Проверяет закрыты или нет текущие торги
