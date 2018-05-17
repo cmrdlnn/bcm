@@ -72,7 +72,7 @@ module BitcoinCourseMonitoring
           bid = pair_orders[:bid].map { |order| order.first.to_f }
           average = bid.inject(0.0) { |sum, price| sum + price } / bid.size
           current_bid_top = $order_book[pair][:bid_top]
-          if (average - pair_orders[:bid_top]).abs / current_bid_top > 0.1
+          if (average - pair_orders[:bid_top]).abs / current_bid_top > 0.05
             $order_book[pair] = pair_orders.merge(bid_top: bid.max)
           else
             $order_book[pair] = pair_orders
