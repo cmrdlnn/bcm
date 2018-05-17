@@ -99,7 +99,7 @@ module BitcoinCourseMonitoring
         # @return [Boolean]
         #  результат проверки
         def slump?(order, price, proportion, time)
-          (order.price * proportion) > ask && Time.now - time > order.created_at
+          (order.price * proportion) > price && Time.now - time > order.created_at
         end
 
         # Проверяет закрыты или нет текущие торги
