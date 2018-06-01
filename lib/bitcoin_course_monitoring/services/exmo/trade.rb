@@ -69,7 +69,7 @@ module BitcoinCourseMonitoring
               profit = profit(bid)
               p "bid: #{bid}"
               p "Прибыль: #{profit}"
-              sell(bid) if $trend[pair][:bid_slope]
+              sell(bid) if profit.positive? && $trend[pair][:bid_slope]
             when 4
               check_sell_order
             end
