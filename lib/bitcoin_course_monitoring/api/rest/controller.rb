@@ -31,15 +31,18 @@ module BitcoinCourseMonitoring
           Thread.abort_on_exception = true
           BitcoinCourseMonitoring::Scheduler.launch
           BitcoinCourseMonitoring::Scheduler.every('1d') do
-            BitcoinCourseMonitoring::Models::Order
-              .where(state: 'error', trade_id: trade_id)
-              .exclude(
-                id: BitcoinCourseMonitoring::Models::Order
-                      .group(:trade_id)
-                      .select(:trade_id, :MAX.sql_function(:id))
-                      .map(:max)
-              )
-              .delete
+            trade_ids = BitcoinCourseMonitoring::Models::Trade.map(:id)
+            trade_ids.each do |trade_id|
+              BitcoinCourseMonitoring::Models::Order
+                .where(state: 'error', trade_id: trade_id)
+                .exclude(
+                  id: BitcoinCourseMonitoring::Models::Order
+                        .group(:trade_id)
+                        .select(:trade_id, :MAX.sql_function(:id))
+                        .map(:max)
+                )
+                .delete
+            end
           end
           Tasks::ResumptionTrading.launch!
           super
